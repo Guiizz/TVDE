@@ -1,6 +1,6 @@
 package Controller;
-import Model.Viagem;
 import Model.Reserva;
+import Model.Viagem;
 
 import java.time.LocalDateTime;
 

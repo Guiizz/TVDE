@@ -23,7 +23,7 @@ public class Viagem {
         this.kms = kms;
         this.custo = custo;
     }
-    public Viagem (Reserva reserva,String condutor, String viatura,LocalDateTime fim,double custo){
+    public Viagem (Reserva reserva, String condutor, String viatura, LocalDateTime fim, double custo){
         this.cliente = reserva.getCliente();
         this.origem = reserva.getOrigem();
         this.destino = reserva.getDestino();
