@@ -1,11 +1,11 @@
 package Model;
 
 public class Condutor {
-    private String nome, morada;
-    private int id, cartaconducao, segsocial, nif, telemovel;
+    private String nome, morada,cartaconducao;
+    private int id, segsocial, nif, telemovel;
     private boolean disponivel;
 
-    public Condutor(String nome, String morada, int id, int cartaconducao, int segsocial, int nif, int telemovel, boolean disponivel) {
+    public Condutor(String nome, String morada, int id, String cartaconducao, int segsocial, int nif, int telemovel, boolean disponivel) {
         this.nome = nome;
         this.morada = morada;
         this.id = id;
@@ -40,11 +40,11 @@ public class Condutor {
         this.id = id;
     }
 
-    public int getCartaconducao() {
+    public String getCartaconducao() {
         return cartaconducao;
     }
 
-    public void setCartaconducao(int cartaconducao) {
+    public void setCartaconducao(String cartaconducao) {
         this.cartaconducao = cartaconducao;
     }
 

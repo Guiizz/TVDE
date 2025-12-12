@@ -23,7 +23,7 @@ public class TVDE {
         //Viatura v2 = new Viatura("Renault","ZOE","AA-00-BB","azul",2004,5);
         //System.out.println(v2);
 
-        Condutor c2 = new Condutor("Jão","Rua da Cona",123,09"/"2025);
+        Condutor c2 = new Condutor("Jão","Rua da Cona",123,"AB-000000 0",123,123,123456789,true);
         System.out.println(c2);
     }
 }
