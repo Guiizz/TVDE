@@ -5,6 +5,14 @@ public class Cliente {
     private String nome, morada;
     private int nif, telemovel;
 
+    /**
+     *
+     * @param nome
+     * @param morada
+     * @param nif
+     * @param telemovel
+     */
+
     public Cliente(String nome, String morada, int nif, int telemovel) {
         this.nome = nome;
         this.morada = morada;
