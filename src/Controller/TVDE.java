@@ -10,7 +10,7 @@ public class TVDE {
     public static void main (String[] args) {
 
         //Controlador do Cliente
-        Cliente c1 = new Cliente("Gilmário","Masculino","Chinesa",11111111,150,676767676);
+        Cliente c1 = new Cliente("Gilmário","Masculino",11111111,676767676);
         System.out.println(c1);
 
         Reserva r1 = new Reserva(c1,LocalDateTime.now(),"Porto","Gaia",10);

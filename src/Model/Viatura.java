@@ -86,6 +86,13 @@ public class Viatura {
      */
 
     public String toString(){
-        return "Viatura [" + matricula + "] - " + marca + ", " + modelo + ", " + cor;
+        return "========== Viatura ==========\n" +
+                "Marca     : " + marca +"\n" +
+                "Modelo    : " + modelo + "\n" +
+                "Matrícula : " + matricula + "\n" +
+                "Ano       : " + ano + "\n" +
+                "Lugares   : " + lugares + "\n" +
+                "Cor       : " + cor + "\n" +
+                "=============================";
     }
 }
