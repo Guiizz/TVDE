@@ -1,8 +1,5 @@
 package Controller;
-import Model.Cliente;
-import Model.Reserva;
-import Model.Viagem;
-import Model.Viatura;
+import Model.*;
 
 import java.time.LocalDateTime;
 
@@ -23,9 +20,10 @@ public class TVDE {
         //System.out.println(">> Teste Viagem (Criada a partir da Reserva):");
         //System.out.println(v1.toString());
 
-        //Viatura viatura = new Viatura("Renault","ZOE","AA-00-BB","azul",2004,5);
-        //System.out.println(viatura);
+        //Viatura v2 = new Viatura("Renault","ZOE","AA-00-BB","azul",2004,5);
+        //System.out.println(v2);
 
-
+        Condutor c2 = new Condutor("Jão","Rua da Cona",123,09"/"2025);
+        System.out.println(c2);
     }
 }

@@ -85,6 +85,7 @@ public class Viatura {
      * @return
      */
 
+    @Override
     public String toString(){
         return "========== Viatura ==========\n" +
                 "Marca     : " + marca +"\n" +
