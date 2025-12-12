@@ -1,4 +1,5 @@
 package Controller;
+import Model.Cliente;
 import Model.Reserva;
 import Model.Viagem;
 import Model.Viatura;
@@ -20,5 +21,9 @@ public class TVDE {
 
         //Viatura viatura = new Viatura("Renault","ZOE","AA-00-BB","azul",2004,5);
         //System.out.println(viatura);
+
+        //Controlador do Cliente
+        //Cliente cliente = new Cliente("Gilmário","Masculino","Chinesa",11111111,150,676767676);
+        //System.out.println(cliente.toString());
     }
 }
