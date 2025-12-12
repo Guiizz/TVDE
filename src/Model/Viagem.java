@@ -63,12 +63,14 @@ private double custo;
     public String toString() {
         DateTimeFormatter data = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         return super.toString() +
-                "\n Detalhes da Viagem: " +
-                "Condutor: " + condutor +
-                " | Viatura: " + viatura.getMatricula() +
-                " | Fim: " + (dataFim != null ? dataFim.format(data) : "Em curso") +
-                " | Custo: " + custo + "€";
+                "========== Viagem ==========\n" +
+                "Condutor   : " + condutor.getNome() + "\n" +
+                "Viatura    : " + viatura.getMatricula() + "\n" +
+                "Fim        : " + (dataFim != null ? dataFim.format(data) : "Em curso") + "\n" +
+                "custo      : " + custo + "€" + "\n" +
+                "=============================";
     }
+
 }
 
 

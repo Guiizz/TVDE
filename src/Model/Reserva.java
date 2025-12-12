@@ -60,9 +60,13 @@ public class Reserva {
     @Override
     public String toString(){
         DateTimeFormatter data = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        return "Cliente: " + cliente.getNome() +
-                " | Data: " + dataInicio.format(data) +
-                " | De: " + origem + " -> Para: " + destino +
-                " | Distância: " + kms + " km";
+        return "========== Reserva ==========\n" +
+                "Cliente   : " + cliente.getNome() + "\n" +
+                "Data      : " + dataInicio.format(data) + "\n" +
+                "De        : " + origem + " -> Para: " + destino + "\n" +
+                "Distância : " + kms + " km" + "\n" +
+                "=============================";
     }
+
+
 }
