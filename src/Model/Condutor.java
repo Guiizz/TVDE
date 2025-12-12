@@ -5,6 +5,18 @@ public class Condutor {
     private int id, segsocial, nif, telemovel;
     private boolean disponivel;
 
+    /**
+     * javadocs
+     * @param nome
+     * @param morada
+     * @param id
+     * @param cartaconducao
+     * @param segsocial
+     * @param nif
+     * @param telemovel
+     * @param disponivel
+     */
+
     public Condutor(String nome, String morada, int id, String cartaconducao, int segsocial, int nif, int telemovel, boolean disponivel) {
         this.nome = nome;
         this.morada = morada;
