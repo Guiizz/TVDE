@@ -82,11 +82,11 @@ public class Condutor {
 
     @Override
     public String toString() {
-      return "========== Condutor ==========\n" +
+      return "========== Condutor =========\n" +
               "Nome        : " + nome +"\n" +
               "NIF         : " + nif + "\n" +
               "Telemóvel   : " + telemovel + "\n" +
               "Disponível  : " + (disponivel ? true : false) +"\n" +
-              "==============================";
+              "=============================";
     }
 }
