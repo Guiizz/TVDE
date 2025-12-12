@@ -1,48 +1,37 @@
 package Model;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-/**
- * Dados de uma reserva de um cliente.
- */
 public class Reserva {
-    private String cliente;
-    private LocalDateTime inicio;
+    private Cliente cliente;
+    private LocalDateTime dataInicio;
     private String origem;
     private String destino;
     private double kms;
 
-    /**
-     * Construtor da reserva.
-     * @param cliente O cliente que fez a reserva.
-     * @param inicio A data e hora de inicio.
-     * @param origem A morada de origem.
-     * @param destino A morada de destino.
-     * @param kms A distancia em Km.
-     */
-    public Reserva(String cliente, LocalDateTime inicio, String origem, String destino, double kms) {
+    public Reserva(Cliente cliente, LocalDateTime dataInicio, String origem, String destino, double kms) {
         this.cliente = cliente;
-        this.inicio = inicio;
+        this.dataInicio = dataInicio;
         this.origem = origem;
         this.destino = destino;
         this.kms = kms;
     }
 
-    // Getters e Setters
-    public String getCliente() {
+    public Cliente getCliente() {
         return cliente;
     }
 
-    public void setCliente(String cliente) {
+    public void setCliente(Cliente cliente) {
         this.cliente = cliente;
     }
 
-    public LocalDateTime getInicio() {
-        return inicio;
+    public LocalDateTime getDataInicio() {
+        return dataInicio;
     }
 
-    public void setInicio(LocalDateTime inicio) {
-        this.inicio = inicio;
+    public void setDataInicio(LocalDateTime dataInicio) {
+        this.dataInicio = dataInicio;
     }
 
     public String getOrigem() {
@@ -68,13 +57,12 @@ public class Reserva {
     public void setKms(double kms) {
         this.kms = kms;
     }
-
-    /**
-     * Representação em String de uma reserva
-     * @return String formatada com a informação
-     */
     @Override
-    public String toString () {
-        return "Reserva de: " + cliente + " | Data: " + inicio;
+    public String toString(){
+        DateTimeFormatter data = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        return "Cliente: " + cliente.getNome() +
+                " | Data: " + dataInicio.format(data) +
+                " | De: " + origem + " -> Para: " + destino +
+                " | Distância: " + kms + " km";
     }
 }
