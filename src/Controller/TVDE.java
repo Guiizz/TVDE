@@ -23,7 +23,7 @@ public class TVDE {
         //System.out.println(viatura);
 
         //Controlador do Cliente
-        //Cliente cliente = new Cliente("Gilmário","Masculino","Chinesa",11111111,150,676767676);
+        //Cliente cliente = new Cliente("Gilmário","Rua A",123456789,987654321);
         //System.out.println(cliente.toString());
     }
 }

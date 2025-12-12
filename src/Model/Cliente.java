@@ -45,7 +45,13 @@ public class Cliente {
     }
 
     @Override
-    public String toString(){
-        return "Nome:" + nome + " Nif:" + nif + " Telemóvel:" + telemovel + " Morada:" + morada;
+    public String toString() {
+        return "========== Cliente ==========\n" +
+                "Nome      : " + nome + "\n" +
+                "NIF       : " + nif + "\n" +
+                "Telemóvel : " + telemovel + "\n" +
+                "Morada    : " + morada + "\n" +
+                "=============================";
     }
+    // O "\n" serve para aparecer uma nova linha
 }
