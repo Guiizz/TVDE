@@ -1,6 +1,7 @@
 package Controller;
 import Model.Reserva;
 import Model.Viagem;
+import Model.Viatura;
 
 import java.time.LocalDateTime;
 
@@ -16,5 +17,8 @@ public class TVDE {
 
         System.out.println(">> Teste Viagem (Criada a partir da Reserva):");
         System.out.println(v1.toString());
+
+        //Viatura viatura = new Viatura("Renault","ZOE","AA-00-BB","azul",2004,5);
+        //System.out.println(viatura);
     }
 }
