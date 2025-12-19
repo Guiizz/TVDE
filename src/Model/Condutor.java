@@ -98,7 +98,7 @@ public class Condutor {
               "Nome        : " + nome +"\n" +
               "NIF         : " + nif + "\n" +
               "Telemóvel   : " + telemovel + "\n" +
-              "Disponível  : " + (disponivel ? true : false) +"\n" +
+              "Disponível  : " + (disponivel ? "sim" : "não") +"\n" +
               "=============================";
     }
 }
