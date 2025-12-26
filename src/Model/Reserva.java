@@ -4,18 +4,31 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Reserva {
+    private static int contador = 1;
+    private int id;
     private Cliente cliente;
+    private Viatura viatura;
     private LocalDateTime dataInicio;
     private String origem;
     private String destino;
     private double kms;
 
-    public Reserva(Cliente cliente, LocalDateTime dataInicio, String origem, String destino, double kms) {
+    public Reserva(Cliente cliente, Viatura viatura, LocalDateTime dataInicio, String origem, String destino, double kms) {
+        this.id = contador++;
         this.cliente = cliente;
+        this.viatura = viatura;
         this.dataInicio = dataInicio;
         this.origem = origem;
         this.destino = destino;
         this.kms = kms;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Cliente getCliente() {
@@ -24,6 +37,14 @@ public class Reserva {
 
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
+    }
+
+    public Viatura getViatura() {
+        return viatura;
+    }
+
+    public void setViatura(Viatura viatura) {
+        this.viatura = viatura;
     }
 
     public LocalDateTime getDataInicio() {
@@ -57,16 +78,10 @@ public class Reserva {
     public void setKms(double kms) {
         this.kms = kms;
     }
+
     @Override
     public String toString(){
         DateTimeFormatter data = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        return "========== Reserva ==========\n" +
-                "Cliente   : " + cliente.getNome() + "\n" +
-                "Data      : " + dataInicio.format(data) + "\n" +
-                "De        : " + origem + " -> Para: " + destino + "\n" +
-                "Distância : " + kms + " km" + "\n" +
-                "=============================";
+        return "Reserva: " + id + " | Cliente: " + cliente.getNome() + " | Data: " + dataInicio.format(data) + " | Origem: " + origem + " | Destino: " + destino;
     }
-
-
 }

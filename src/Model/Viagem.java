@@ -3,27 +3,22 @@ package Model;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-
 public class Viagem extends Reserva {
+    private Condutor condutor;
+    private LocalDateTime dataFim;
+    private double custo;
 
-private Condutor condutor;
-private Viatura viatura;
-private LocalDateTime dataFim;
-private double custo;
-
-
-    public Viagem(Cliente cliente, LocalDateTime dataInicio, String origem, String destino, double kms) {
-        super(cliente, dataInicio, origem, destino, kms);
+    public Viagem(Cliente cliente, Viatura viatura, LocalDateTime dataInicio, String origem, String destino, double kms, Condutor condutor, LocalDateTime dataFim, double custo) {
+        super(cliente, viatura, dataInicio, origem, destino, kms);
         this.condutor = condutor;
-        this.viatura = viatura;
         this.dataFim = dataFim;
         this.custo = custo;
     }
 
-    public Viagem(Reserva reserva, LocalDateTime dataInicio, String origem, String destino, double kms) {
-        super(reserva.getCliente(), reserva.getDataInicio(), reserva.getOrigem(), reserva.getDestino(), reserva.getKms());
+    public Viagem (Reserva r, Condutor condutor, LocalDateTime dataFim, double custo){
+        super(r.getCliente(), r.getViatura(), r.getDataInicio(), r.getOrigem(), r.getDestino(), r.getKms());
+        setId(r.getId());
         this.condutor = condutor;
-        this.viatura = viatura;
         this.dataFim = dataFim;
         this.custo = custo;
     }
@@ -34,14 +29,6 @@ private double custo;
 
     public void setCondutor(Condutor condutor) {
         this.condutor = condutor;
-    }
-
-    public Viatura getViatura() {
-        return viatura;
-    }
-
-    public void setViatura(Viatura viatura) {
-        this.viatura = viatura;
     }
 
     public LocalDateTime getDataFim() {
@@ -59,21 +46,13 @@ private double custo;
     public void setCusto(double custo) {
         this.custo = custo;
     }
+
     @Override
-    public String toString() {
-        DateTimeFormatter data = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        return super.toString() +
-                "========== Viagem ==========\n" +
-                "Condutor   : " + condutor.getNome() + "\n" +
-                "Viatura    : " + viatura.getMatricula() + "\n" +
-                "Fim        : " + (dataFim != null ? dataFim.format(data) : "Em curso") + "\n" +
-                "custo      : " + custo + "€" + "\n" +
-                "=============================";
+    public String toString(){
+        return "Viagem: " + getId() + " | Cliente: " + getCliente().getNome() + " | Condutor: " + condutor.getNome() + " | Origem: " + getOrigem() + " | Destino: " + getDestino() + " | Custo: " + custo;
     }
 
 }
-
-
 
 
 

@@ -1,5 +1,7 @@
 package Model;
 
+import java.time.format.DateTimeFormatter;
+
 public class Cliente {
 
     private String nome, morada;
@@ -53,13 +55,17 @@ public class Cliente {
     }
 
     @Override
-    public String toString() {
-        return "========== Cliente ==========\n" +
-                "Nome      : " + nome + "\n" +
-                "NIF       : " + nif + "\n" +
-                "Telemóvel : " + telemovel + "\n" +
-                "Morada    : " + morada + "\n" +
-                "=============================";
+    public String toString(){
+        return "Cliente: " + nome + " | NIF: " + nif + " | Telemovel: " + telemovel + " | Morada: " + morada;
     }
+   // @Override
+    // public String toString() {
+    //    return "========== Cliente ==========\n" +
+    //          "Nome      : " + nome + "\n" +
+    //            "NIF       : " + nif + "\n" +
+    //            "Telemóvel : " + telemovel + "\n" +
+    //            "Morada    : " + morada + "\n" +
+    //            "=============================";
+    // }
     // O "\n" serve para aparecer uma nova linha
 }

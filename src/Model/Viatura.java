@@ -32,7 +32,7 @@ public class Viatura {
     /**
      * getters e setters
      */
-    public String getModelo() {
+    public String getModelo(String novoModelo) {
         return modelo;
     }
 
@@ -80,20 +80,20 @@ public class Viatura {
         this.matricula = matricula;
     }
 
-    /**
-     * toString
-     * @return
-     */
-
     @Override
     public String toString(){
-        return "========== Viatura ==========\n" +
-                "Marca     : " + marca +"\n" +
-                "Modelo    : " + modelo + "\n" +
-                "Matrícula : " + matricula + "\n" +
-                "Ano       : " + ano + "\n" +
-                "Lugares   : " + lugares + "\n" +
-                "Cor       : " + cor + "\n" +
-                "=============================";
+        return "Marca: " + marca + " | Modelo: " + modelo + " | Matricula: " + matricula + " | Ano: " + ano;
     }
+
+  //  @Override
+  //  public String toString(){
+  //      return "========== Viatura ==========\n" +
+  //              "Marca     : " + marca +"\n" +
+  //              "Modelo    : " + modelo + "\n" +
+  //              "Matrícula : " + matricula + "\n" +
+  //              "Ano       : " + ano + "\n" +
+  //              "Lugares   : " + lugares + "\n" +
+  //              "Cor       : " + cor + "\n" +
+  //              "=============================";
+  // }
 }
