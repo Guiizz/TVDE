@@ -183,31 +183,32 @@ public class GestãoTVDE {
         return null;
     }
 
-    public boolean atualizarViatura(String matricula, String novaMarca, String novoModelo, String novaMatricula, int novoAno) {
+    public boolean atualizarCorViatura(String matricula, String novaCor) {
         Viatura v = procurarViaturas(matricula);
-        if (v == null) return false;
-
-        v.setMarca(novaMarca);
-        v.getModelo(novoModelo);
-        v.setMatricula(novaMatricula);
-        v.setAno(novoAno);
-        System.out.println("Dados da viatura atualizados com sucesso!");
-        return true;
+        if (v != null) {
+            v.setCor(novaCor);
+            System.out.println("Cor atualizada com sucesso.");
+            return true;
+        }
+        System.out.println("Viatura não encontrada.");
+        return false;
     }
 
-    public boolean removerViatura(String matricula) {
+    public boolean eliminarViatura(String matricula) {
         Viatura v = procurarViaturas(matricula);
-        if (v == null) return false;
-
-        for (Reserva r : reservas) {
-            if (r.getViatura() == v) return false;
+        if (v == null) {
+            System.out.println("Viatura não encontrada.");
+            return false;
         }
-
-        for (Viagem vg : viagens) {
-            if (vg.getViatura() == v) return false;
+        for (Viagem viagem : viagens) {
+            if (viagem.getViatura() == v) {
+                System.out.println("Erro: não pode eliminar esta viatura pois ela está associada a uma viagem.");
+                return false;
+            }
         }
-
-        return viaturas.remove(v);
+        viaturas.remove(v);
+        System.out.println("Viatura removida com sucesso.");
+        return true;
     }
 
     public ArrayList<Viatura> getViaturas() { return new ArrayList<>(viaturas);}
