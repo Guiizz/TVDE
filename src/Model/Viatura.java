@@ -1,43 +1,115 @@
 package Model;
 
 public class Viatura {
-    /**
-     * atributos obrigatorios
-     */
-    private String marca, modelo, matricula, cor;
-    private int ano, lugares;
+
+    private static int contadorId = 1;
+
+    private int id;
+
+    private String matricula;
+
+    private String marca;
+
+    private String modelo;
+
+    private int anoFabrico;
+
+    private String cor;
+
+    private int lugares;
+
 
     /**
-     * java docs
-     * @param marca
-     * @param modelo
-     * @param matricula
-     * @param ano
-     * @param lugares
-     * @param cor
+     * Construtor com parametros.
+     *
+     * @param matricula Matricula do veiculo
+     * @param marca Marca do veiculo
+     * @param modelo Modelo do veiculo
+     * @param anoFabrico Ano de fabrico
+     * @param cor Cor do veiculo
+     * @param lugares Numero de lugares
      */
-
-    /**
-     * construtor
-     */
-    public Viatura(String marca, String modelo, String matricula, String cor, int ano, int lugares) {
+    public Viatura(String matricula, String marca, String modelo, int anoFabrico,
+                   String cor, int lugares) {
+        this.id = contadorId++;
+        this.matricula = matricula;
         this.marca = marca;
         this.modelo = modelo;
-        this.matricula = matricula;
+        this.anoFabrico = anoFabrico;
         this.cor = cor;
-        this.ano = ano;
         this.lugares = lugares;
     }
 
     /**
-     * getters e setters
+     * Construtor com ID especifico (usado para leitura de ficheiros).
+     *
+     * @param id Identificador da viatura
+     * @param matricula Matricula do veiculo
+     * @param marca Marca do veiculo
+     * @param modelo Modelo do veiculo
+     * @param anoFabrico Ano de fabrico
+     * @param cor Cor do veiculo
+     * @param lugares Numero de lugares
      */
-    public String getModelo(String novoModelo) {
+    public Viatura(int id, String matricula, String marca, String modelo, int anoFabrico,
+                   String cor, int lugares) {
+        this.id = id;
+        if (id >= contadorId) {
+            contadorId = id + 1;
+        }
+        this.matricula = matricula;
+        this.marca = marca;
+        this.modelo = modelo;
+        this.anoFabrico = anoFabrico;
+        this.cor = cor;
+        this.lugares = lugares;
+    }
+
+    // Getters e Setters
+
+
+    public int getId() {
+        return id;
+    }
+
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+
+    public String getMatricula() {
+        return matricula;
+    }
+
+
+    public void setMatricula(String matricula) {
+        this.matricula = matricula;
+    }
+
+
+    public String getMarca() {
+        return marca;
+    }
+
+    public void setMarca(String marca) {
+        this.marca = marca;
+    }
+
+    public String getModelo() {
         return modelo;
     }
 
     public void setModelo(String modelo) {
         this.modelo = modelo;
+    }
+
+    public int getAnoFabrico() {
+        return anoFabrico;
+    }
+
+    public void setAnoFabrico(int anoFabrico) {
+        this.anoFabrico = anoFabrico;
     }
 
     public String getCor() {
@@ -56,44 +128,39 @@ public class Viatura {
         this.lugares = lugares;
     }
 
-    public int getAno() {
-        return ano;
+    public static void reiniciarContador() {
+        contadorId = 1;
     }
 
-    public void setAno(int ano) {
-        this.ano = ano;
+    public static void setContadorId(int valor) {
+        contadorId = valor;
     }
 
-    public String getMarca() {
-        return marca;
+    public static int getContadorId() {
+        return contadorId;
     }
 
-    public void setMarca(String marca) {
-        this.marca = marca;
+    public String paraFicheiro() {
+        return id + ";" + matricula + ";" + marca + ";" + modelo + ";" +
+                anoFabrico + ";" + cor + ";" + lugares;
     }
 
-    public String getMatricula() {
-        return matricula;
-    }
-
-    public void setMatricula(String matricula) {
-        this.matricula = matricula;
-    }
 
     @Override
-    public String toString(){
-        return "Marca: " + marca + " | Modelo: " + modelo + " | Matricula: " + matricula + " | Ano: " + ano;
+    public String toString() {
+        return "ID: " + id + " | Matricula: " + matricula + " | " + marca + " " + modelo +
+                " (" + anoFabrico + ")";
     }
 
-  //  @Override
-  //  public String toString(){
-  //      return "========== Viatura ==========\n" +
-  //              "Marca     : " + marca +"\n" +
-  //              "Modelo    : " + modelo + "\n" +
-  //              "Matrícula : " + matricula + "\n" +
-  //              "Ano       : " + ano + "\n" +
-  //              "Lugares   : " + lugares + "\n" +
-  //              "Cor       : " + cor + "\n" +
-  //              "=============================";
-  // }
+
+    public String toStringDetalhado() {
+        return "=== VIATURA ===" +
+                "\nID: " + id +
+                "\nMatricula: " + matricula +
+                "\nMarca: " + marca +
+                "\nModelo: " + modelo +
+                "\nAno de Fabrico: " + anoFabrico +
+                "\nCor: " + cor +
+                "\nLugares: " + lugares;
+    }
 }
