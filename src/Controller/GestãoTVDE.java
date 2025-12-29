@@ -365,8 +365,164 @@ public class GestãoTVDE {
     // ESTATISTICAS E RELATÓRIOS
     //-----------------------------------------------------------------------------------------------
 
+    // 1. Apresentar a lista de clientes de uma viatura (reservas e viagens)
+    public ArrayList<Cliente> listarClientesPorViatura (String matricula) {
+        ArrayList<Cliente> clientesViatura = new ArrayList<>();
+        Viatura v = procurarViaturas(matricula);
+
+        if (v == null) {
+            System.out.println("Erro: Viatura não encontrada.");
+            return clientesViatura;
+        }
+
+        // Verificar nas Reservas
+        for (Reserva r :reservas) {
+            if (r.getViatura() == v) {
+                if (!clientesViatura.contains(r.getCliente())) {
+                    clientesViatura.add(r.getCliente());
+                }
+            }
+        }
+
+        // Verificar nas Viagens
+        for (Viagem viagem : viagens) {
+            if (viagem.getViatura() == v) {
+                if (!clientesViatura.contains(viagem.getCliente())) {
+                    clientesViatura.add(viagem.getCliente());
+                }
+            }
+        }
+        return clientesViatura;
+    }
 
 
+    // 2. Apresentar o valor total faturado por um motorista num intervalo de datas
+    public double calcularFaturacaoCondutor(int nifCondutor, LocalDateTime inicio, LocalDateTime fim) {
+        double totalFaturado = 0.0;
+        Condutor c = procurarCondutores(nifCondutor);
 
+        if (c == null) {
+            System.out.println("Condutor não encontrado.");
+            return 0.0;
+        }
 
+        for (Viagem v : viagens) {
+            // Verifica se a viagem é do condutor e se a data de fim está no intervalo
+            if (v.getCondutor() == c) {
+                LocalDateTime dataViagem = v.getDataFim(); // Assumimos a data de fim para a faturação
+                if ((dataViagem.isEqual(inicio) || dataViagem.isAfter(inicio)) &&
+                        (dataViagem.isEqual(fim) || dataViagem.isBefore(fim))) {
+                    totalFaturado += v.getCusto();
+                }
+            }
+        }
+        return totalFaturado;
+    }
+
+    // 3. Apresentar a distância média (em kms) das viagens num intervalo de datas
+    public double calcularDistanciaMedia(LocalDateTime inicio, LocalDateTime fim) {
+        double totalKms = 0;
+        int contadorViagens = 0;
+
+        for (Viagem v : viagens) {
+            LocalDateTime dataViagem = v.getDataFim();
+            if ((dataViagem.isEqual(inicio) || dataViagem.isAfter(inicio)) &&
+                    (dataViagem.isEqual(fim) || dataViagem.isBefore(fim))) {
+                totalKms += v.getKms();
+                contadorViagens++;
+            }
+        }
+
+        if (contadorViagens == 0) return 0.0;
+        return totalKms / contadorViagens;
+    }
+
+    // 4. Apresentar o destino mais solicitado (reservas e viagens) num intervalo de datas
+    public String obterDestinoMaisSolicitado(LocalDateTime inicio, LocalDateTime fim) {
+        // Como não podemos usar Maps complexos sem validação, usamos dois ArrayLists paralelos
+        ArrayList<String> destinos = new ArrayList<>();
+        ArrayList<Integer> contagens = new ArrayList<>();
+
+        class ContadorAux {
+            void contar(String destino) {
+                int index = destinos.indexOf(destino);
+                if (index == -1) {
+                    destinos.add(destino);
+                    contagens.add(1);
+                } else {
+                    contagens.set(index, contagens.get(index) + 1);
+                }
+            }
+        }
+        ContadorAux auxiliar = new ContadorAux();
+
+        // Contar nas Reservas
+        for (Reserva r : reservas) {
+            if ((r.getDataInicio().isEqual(inicio) || r.getDataInicio().isAfter(inicio)) &&
+                    (r.getDataInicio().isEqual(fim) || r.getDataInicio().isBefore(fim))) {
+                auxiliar.contar(r.getDestino());
+            }
+        }
+
+        // Contar nas Viagens
+        for (Viagem v : viagens) {
+            // Usamos DataInicio para ser coerente com a reserva quanto à intenção de ir ao destino
+            if ((v.getDataInicio().isEqual(inicio) || v.getDataInicio().isAfter(inicio)) &&
+                    (v.getDataInicio().isEqual(fim) || v.getDataInicio().isBefore(fim))) {
+                auxiliar.contar(v.getDestino());
+            }
+        }
+
+        // Encontrar o maior
+        String destinoMaisPopular = "Nenhum destino encontrado";
+        int maxCount = -1;
+
+        for (int i = 0; i < contagens.size(); i++) {
+            if (contagens.get(i) > maxCount) {
+                maxCount = contagens.get(i);
+                destinoMaisPopular = destinos.get(i);
+            }
+        }
+
+        return destinoMaisPopular + " (" + maxCount + " vezes)";
+    }
+
+    // 5. Lista dos clientes com viagens cuja distância se encontra dentro de um intervalo
+    public ArrayList<Cliente> listarClientesPorDistancia(double minKms, double maxKms) {
+        ArrayList<Cliente> clientesNoIntervalo = new ArrayList<>();
+
+        for (Viagem v : viagens) {
+            if (v.getKms() >= minKms && v.getKms() <= maxKms) {
+                if (!clientesNoIntervalo.contains(v.getCliente())) {
+                    clientesNoIntervalo.add(v.getCliente());
+                }
+            }
+        }
+        return clientesNoIntervalo;
+    }
+
+    // 6. Pesquisar as viagens de cliente num intervalo de datas (Requisito funcional)
+    public ArrayList<Viagem> pesquisarViagensCliente(int nifCliente, LocalDateTime inicio, LocalDateTime fim) {
+        ArrayList<Viagem> resultado = new ArrayList<>();
+
+        // Verifica se o cliente existe
+        Cliente c = procurarClientes(nifCliente);
+        if (c == null) {
+            System.out.println("Cliente não encontrado.");
+            return resultado;
+        }
+
+        for (Viagem v : viagens) {
+            // Verifica se a viagem pertence ao cliente
+            if (v.getCliente().getNif() == nifCliente) {
+                // Verifica se a data de INÍCIO da viagem está dentro do intervalo
+                LocalDateTime data = v.getDataInicio();
+                if ((data.isEqual(inicio) || data.isAfter(inicio)) &&
+                        (data.isEqual(fim) || data.isBefore(fim))) {
+                    resultado.add(v);
+                }
+            }
+        }
+        return resultado;
+    }
 }
