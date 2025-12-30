@@ -96,26 +96,6 @@ public class Validador {
             return false;
         }
 
-        carta = carta.replaceAll("\\s-", "");
-        // verificar se tem 8 caracteres
-        if (carta.length() < 8) {
-            return false;
-        }
-
-        // verificar se os primeiros 2 sao letras
-        for (int i = 0; i < 2 && i < carta.length(); i++) {
-            if (!Character.isLetter(carta.charAt(i))){
-                return false;
-            }
-        }
-
-        //Verificar se os restantes sao digitos
-        for (int i = 2; i < carta.length(); i++) {
-            if (!Character.isDigit(carta.charAt(i))) {
-                return false;
-            }
-        }
-
         return true;
     }
 
