@@ -2,6 +2,7 @@ package UI;
 
 import Controller.GestaoTVDE;
 import Model.*;
+import util.Validador;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -103,19 +104,46 @@ public class Menu {
         System.out.println("=== ADICIONAR CONDUTOR ===\n");
 
         // Nome (minimo 3 caracteres)
-        String nome = lerString("Nome (minimo 3 caracteres): ");
+        String nome = lerStringComValidacao("Nome (minimo 3 caracteres): ",3);
 
         // Numero de identificacao (minimo 8 digitos)
-        String numId = lerString("N. Identificacao (CC - minimo 8 digitos): ");
+        String numId;
+        do {
+            numId = lerString("N. Identificacao (CC - minimo 8 digitos): ");
+            if (!Validador.validarNumeroIdentificacao(numId)) {
+                System.out.println(Validador.getMensagemErroNumId());
+            }
+        }while (!Validador.validarNumeroIdentificacao(numId));
+
 
         // Carta de conducao
-        String carta = lerString("Carta de Conducao (ex: AB-123456): ");
+        String carta;
+        do {
+            carta = lerString("Carta de Conducao (ex: AB-123456): ");
+            if (!Validador.validarCartaConducao(carta)){
+                System.out.println(Validador.getMensagemErroCarta());
+            }
+        }while (!Validador.validarCartaConducao(carta));
+
 
         // Numero de Seguranca Social (11 digitos)
-        String nss = lerString("N. Seguranca Social (11 digitos): ");
+        String nss;
+        do {
+            nss = lerString("N. Seguranca Social (11 digitos): ");
+            if (!Validador.validarNss(nss)){
+                System.out.println(Validador.gerMensagemErroNss());
+            }
+        }while (!Validador.validarNss(nss));
+
 
         // NIF (9 digitos com validacao)
-        String nif = lerString("NIF (9 digitos): ");
+        String nif;
+        do {
+            nif = lerString("NIF (9 digitos): ");
+            if (!Validador.validarNif(nif)){
+                System.out.println(Validador.getMensagemErroNif());
+            }
+        }while (!Validador.validarNif(nif));
 
         // Verificar se NIF ja existe
         if (gestao.procurarCondutorPorNif(nif) != null) {
@@ -124,11 +152,18 @@ public class Menu {
             return;
         }
 
+
         // Telemovel (9 digitos, comecar por 9, 2 ou 3)
-        String tel = lerString("Telemovel (9 digitos): ");
+        String tel;
+        do {
+            tel = lerString("Telemovel (9 digitos): ");
+            if (!Validador.validarTelefone(tel)){
+                System.out.println(Validador.getMensagemErroTelefone());
+            }
+        }while (!Validador.validarTelefone(tel));
 
         // Morada (minimo 5 caracteres)
-        String morada = lerString("Morada (minimo 5 caracteres): ");
+        String morada = lerStringComValidacao("Morada (minimo 5 caracteres): ",5);
 
         Condutor condutor = new Condutor(nome, numId, carta, nss, nif, tel, morada);
 
@@ -201,24 +236,71 @@ public class Menu {
         System.out.println("\n(Deixe em branco para manter o valor atual)\n");
 
         String nome = lerStringOpcional("Novo nome [" + c.getNome() + "]: ");
+        if (!nome.isEmpty()){
+            if(Validador.validarComprimentoMinimo(nome, 3)){
+                c.setNome(nome);
+            }else {
+                System.out.println("Nome deve ter minimo 3 caracteres. Valor mantido.");
+            }
+        }
 
 
         String numId = lerStringOpcional("Novo N. Identificacao [" + c.getNumeroIdentificacao() + "]: ");
+        if (!numId.isEmpty()) {
+            if (Validador.validarNumeroIdentificacao(numId)) {
+                c.setNumeroIdentificacao(numId);
+            } else {
+                System.out.println(Validador.getMensagemErroNumId() + " Valor mantido.");
+            }
+        }
 
 
         String carta = lerStringOpcional("Nova Carta de Conducao [" + c.getCartaConducao() + "]: ");
+        if (!carta.isEmpty()) {
+            if (Validador.validarCartaConducao(carta)){
+                c.setCartaConducao(carta);
+            }else {
+                System.out.println(Validador.getMensagemErroCarta() + " Valor mantido");
+            }
+        }
 
 
         String nss = lerStringOpcional("Novo N. Seguranca Social [" + c.getNumeroSegurancaSocial() + "]: ");
+        if (!nss.isEmpty()) {
+            if (Validador.validarNss(nss)){
+                c.setNumeroSegurancaSocial(nss);
+            } else {
+                System.out.println(Validador.gerMensagemErroNss() + " Valor mantido.");
+            }
+        }
 
 
         String nif = lerStringOpcional("Novo NIF [" + c.getNif() + "]: ");
-
+        if (!nif.isEmpty()) {
+            if (Validador.validarNif(nif)) {
+                c.setNif(nif);
+            } else {
+                System.out.println(Validador.getMensagemErroNif() + " Valor mantido.");
+            }
+        }
 
         String tel = lerStringOpcional("Novo Telemovel [" + c.getTelemovel() + "]: ");
+        if (!tel.isEmpty()) {
+            if (Validador.validarTelefone(tel)) {
+                c.setTelemovel(tel);
+            } else {
+                System.out.println(Validador.getMensagemErroTelefone() + " Valor mantido.");
+            }
+        }
 
         String morada = lerStringOpcional("Nova Morada [" + c.getMorada() + "]: ");
-
+        if (!morada.isEmpty()) {
+            if (Validador.validarComprimentoMinimo(morada, 5)) {
+                c.setMorada(morada);
+            } else {
+                System.out.println(Validador.getMensagemErroMorada() + " Valor mantido");
+            }
+        }
 
         System.out.println("\nCondutor atualizado com sucesso!");
         pausar();
@@ -343,7 +425,16 @@ public class Menu {
         } while (valor.isEmpty());
         return valor;
     }
-
+    private String lerStringComValidacao(String mensagem, int minimo) {
+        String valor;
+        do {
+            valor = lerString(mensagem);
+            if (!Validador.validarComprimentoMinimo(valor, minimo)) {
+                System.out.println("Deve ter pelo menos " + minimo + " caracteres.");
+            }
+        } while (!Validador.validarComprimentoMinimo(valor, minimo));
+        return valor;
+    }
 
 
     /**

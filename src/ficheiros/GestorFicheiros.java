@@ -2,7 +2,7 @@ package ficheiros;
 
 import java.io.*;
 import Model.*;
-import Gestão.TVDE;
+import Controller.GestaoTVDE;
 import java.util.ArrayList;
 
 public class GestorFicheiros {
