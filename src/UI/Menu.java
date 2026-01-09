@@ -68,20 +68,7 @@ public class Menu {
                     menuFicheiros();
                     break;
                 case 0:
-                    String resposta = lerString("Deseja guardar as alterações antes de sair? (S/N): ");
-
-                    // Verifica se a resposta é "S" ou "s" (ignora maiúsculas/minúsculas)
-                    if (resposta.equalsIgnoreCase("S")) {
-                        try {
-                            System.out.println("A guardar dados...");
-                            gestorFicheiros.guardarTudo(gestao);
-                            System.out.println("Dados guardados com sucesso!");
-                        } catch (java.io.IOException e) {
-                            System.out.println("ERRO: Não foi possível guardar os dados: " + e.getMessage());
-                        }
-                    } else if (resposta.equalsIgnoreCase("N")){
-                        System.out.println("A sair sem guardar alterações...");
-                    }
+                    menuSair();
                     break;
                 default:
                     System.out.println("\nOpcao invalida!");
@@ -564,6 +551,23 @@ public class Menu {
                     pausar();
             }
         } while (opcao != 0);
+    }
+
+    private void menuSair () {
+        String resposta = lerString("Deseja guardar as alterações antes de sair? (S/N): ");
+
+        // Verifica se a resposta é "S" ou "s" (ignora maiúsculas/minúsculas)
+        if (resposta.equalsIgnoreCase("S")) {
+            try {
+                System.out.println("A guardar dados...");
+                gestorFicheiros.guardarTudo(gestao);
+                System.out.println("Dados guardados com sucesso!");
+            } catch (java.io.IOException e) {
+                System.out.println("ERRO: Não foi possível guardar os dados: " + e.getMessage());
+            }
+        } else if (resposta.equalsIgnoreCase("N")){
+            System.out.println("A sair sem guardar alterações...");
+        }
     }
 
     // ==================== METODOS AUXILIARES ====================
