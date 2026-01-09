@@ -3,7 +3,9 @@ package UI;
 import Controller.GestaoTVDE;
 import Model.*;
 import util.Validador;
+import ficheiros.GestorFicheiros;
 
+import java.nio.channels.ScatteringByteChannel;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -13,11 +15,14 @@ public class Menu {
     private GestaoTVDE gestao;
     private Scanner scanner;
     private DateTimeFormatter formatter;
+    private GestorFicheiros gestorFicheiros;
 
     public Menu() {
         this.gestao = new GestaoTVDE();
         this.scanner = new Scanner(System.in);
         this.formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        this.gestorFicheiros = new GestorFicheiros();
+//        this.gestorFicheiros.carregarDados(this.gestao);
     }
     public void iniciar(){
         menuPrincipal();
@@ -48,7 +53,15 @@ public class Menu {
                 case 1:
                     menuCondutores();
                     break;
+                case 2:
+                    menuViaturas();
+                    break;
+                case 7:
+                    menuFicheiros();
+                    break;
                 case 0:
+//                    System.out.println("\nA guardar as alterações...");
+//                    gestorFicheiros.gravarDados(this.gestao);
                     break;
                 default:
                     System.out.println("\nOpcao invalida!");
@@ -57,7 +70,7 @@ public class Menu {
         } while (opcao != 0);
     }
 
-
+// Menu Condutores
     private void menuCondutores() {
         int opcao;
         do {
@@ -106,6 +119,18 @@ public class Menu {
         // Nome (minimo 3 caracteres)
         String nome = lerStringComValidacao("Nome (minimo 3 caracteres): ",3);
 
+        // NIF (9 digitos com validacao)
+        String nif;
+        do {
+            nif = lerString("NIF (9 digitos): ");
+            if (!Validador.validarNif(nif)){
+                System.out.println(Validador.getMensagemErroNif());
+            }
+            if (gestao.procurarCondutorPorNif(nif) != null) {    // Verificar se NIF ja existe
+                System.out.println("\nJa existe um condutor com este NIF!");
+            }
+        }while (!Validador.validarNif(nif) || gestao.procurarCondutorPorNif(nif) != null);
+
         // Numero de identificacao (minimo 8 digitos)
         String numId;
         do {
@@ -134,24 +159,6 @@ public class Menu {
                 System.out.println(Validador.gerMensagemErroNss());
             }
         }while (!Validador.validarNss(nss));
-
-
-        // NIF (9 digitos com validacao)
-        String nif;
-        do {
-            nif = lerString("NIF (9 digitos): ");
-            if (!Validador.validarNif(nif)){
-                System.out.println(Validador.getMensagemErroNif());
-            }
-        }while (!Validador.validarNif(nif));
-
-        // Verificar se NIF ja existe
-        if (gestao.procurarCondutorPorNif(nif) != null) {
-            System.out.println("\nJa existe um condutor com este NIF!");
-            pausar();
-            return;
-        }
-
 
         // Telemovel (9 digitos, comecar por 9, 2 ou 3)
         String tel;
@@ -218,7 +225,6 @@ public class Menu {
      * Altera os dados de um condutor.
      */
     private void alterarCondutor() {
-        //NAO ESTA A FUNCIONAR!!!!
         limparEcra();
         System.out.println("=== ALTERAR CONDUTOR ===\n");
 
@@ -243,6 +249,22 @@ public class Menu {
                 System.out.println("Nome deve ter minimo 3 caracteres. Valor mantido.");
             }
         }
+
+
+        String nif = lerStringOpcional("Novo NIF [" + c.getNif() + "]: ");
+        do {
+            if (!nif.isEmpty()) {
+                if (Validador.validarNif(nif)) {
+                    if (gestao.procurarCondutorPorNif(nif) != null) {    // Verificar se NIF ja existe
+                        System.out.println("\nJa existe um condutor com este NIF!");
+                    }else {
+                        c.setNif(nif);
+                    }
+                } else {
+                    System.out.println(Validador.getMensagemErroNif() + " Valor mantido.");
+                }
+            }
+        }while (Validador.validarNif(nif) || gestao.procurarCondutorPorNif(nif) != null);
 
 
         String numId = lerStringOpcional("Novo N. Identificacao [" + c.getNumeroIdentificacao() + "]: ");
@@ -274,15 +296,6 @@ public class Menu {
             }
         }
 
-
-        String nif = lerStringOpcional("Novo NIF [" + c.getNif() + "]: ");
-        if (!nif.isEmpty()) {
-            if (Validador.validarNif(nif)) {
-                c.setNif(nif);
-            } else {
-                System.out.println(Validador.getMensagemErroNif() + " Valor mantido.");
-            }
-        }
 
         String tel = lerStringOpcional("Novo Telemovel [" + c.getTelemovel() + "]: ");
         if (!tel.isEmpty()) {
@@ -330,18 +343,194 @@ public class Menu {
         pausar();
     }
 
+// Menu Viaturas
+    private void menuViaturas() {
+        int opcao;
+        do {
+            limparEcra();
+            System.out.println("╔══════════════════════════════════════════════════════════════╗");
+            System.out.println("║                   GESTAO DE VIATURAS                         ║");
+            System.out.println("╠══════════════════════════════════════════════════════════════╣");
+            System.out.println("║  1. Adicionar viatura                                        ║");
+            System.out.println("║  2. Listar todas as viaturas                                 ║");
+            System.out.println("║  3. Consultar viatura                                        ║");
+            System.out.println("║  4. Alterar viatura                                          ║");
+            System.out.println("║  5. Remover viatura                                          ║");
+            System.out.println("║  0. Voltar                                                   ║");
+            System.out.println("╚══════════════════════════════════════════════════════════════╝");
+
+            opcao = lerInteiro("Opcao: ");
+
+            switch (opcao) {
+                case 1:
+                    adicionarViatura();
+                    break;
+                case 2:
+                    listarViaturas();
+                    break;
+                case 3:
+                    consultarViatura();
+                    break;
+                case 4:
+                    alterarViatura();
+                    break;
+                case 5:
+                    removerCondutor();
+                    break;
+                case 0:
+                    break;
+                default:
+                    System.out.println("\nOpcao invalida!");
+                    pausar();
+            }
+        } while (opcao != 0);
+    }
+
+    private void adicionarViatura() {
+        limparEcra();
+        System.out.println("=== ADICIONAR VIATURA ===\n");
+
+        String marca = lerStringComValidacao("Marca da Viatura(mínimo 2 caracteres): ",2);
+
+        String modelo = lerStringComValidacao("Modelo da Viatura(mínimo 1 caracteres): ",1);
+
+        String matricula;
+        do {
+            matricula = lerString("Matrícula :");
+            if (!Validador.validarMatricula(matricula)){
+                System.out.println(Validador.getMensagemErroMatricula());
+            }
+            if (gestao.procurarViaturaPorMatricula(matricula) != null){
+                System.out.println("\nJá existe uma viatura com esta matrícula.");
+            }
+        }while (!Validador.validarMatricula(matricula) || gestao.procurarViaturaPorMatricula(matricula) != null);
+
+        matricula = Validador.formatarMatricula(matricula);
+
+        int anoFabrico;
+        do {
+         anoFabrico = lerInteiro("Ano de Fabrico :");
+         if (!Validador.validarAnoFabrico(anoFabrico)){
+             System.out.println(Validador.getMensagemErroAno());
+         }
+        }while (!Validador.validarAnoFabrico(anoFabrico));
+
+        String cor = lerStringComValidacao("Cor :",4);
+
+        int lugares;
+        do {
+            lugares = lerInteiro("Lugares :");
+            if (!Validador.validarLugares(lugares)){
+                System.out.println(Validador.getMensagemErroLugares());
+            }
+        }while (!Validador.validarLugares(lugares));
+
+        Viatura viatura = new Viatura(matricula,marca,modelo,anoFabrico,cor,lugares);
+
+        if (gestao.adicionarViatura(viatura)){
+            System.out.println("\nViatura adicionada com sucesso! (ID: " + viatura.getId() + ")");
+        }else{
+            System.out.println("\nErro ao adicionar viatura!");
+        }
+        pausar();
+    }
+
+    private void listarViaturas (){
+        limparEcra();
+        System.out.println("=== LISTA DE VIATURAS ===\n");
+
+        ArrayList<Viatura> viaturas = gestao.getViaturas();
+        int numViaturas = gestao.getNumeroViaturas();
+
+        if (numViaturas == 0) {
+            System.out.println("Nenhum condutor registado.");
+        } else {
+            for (int i = 0; i < numViaturas; i++) {
+                System.out.println(viaturas.get(i).toString());
+            }
+            System.out.println("\nTotal: " + numViaturas + " condutor(es)");
+        }
+        pausar();
+    }
+
+    private void consultarViatura (){
+        limparEcra();
+        System.out.println("=== CONSULTAR VIATURAS ===\n");
+
+        int id = lerInteiroPositivo("ID da viatura: ");
+        Viatura viatura = gestao.procurarViaturaPorId(id);
+
+        if (viatura != null) {
+            System.out.println("\n" + viatura.toStringDetalhado());
+        } else {
+            System.out.println("\nViatura nao encontrado!");
+        }
+        pausar();
+    }
+
+    private void alterarViatura (){
+        limparEcra();
+        System.out.println("=== ALTERAR VIATURA ===\n");
+
+        int id = lerInteiroPositivo("ID da viatura: ");
+        Viatura viatura = gestao.procurarViaturaPorId(id);
+
+        if (viatura == null) {
+            System.out.println("\nViatura nao encontrada!");
+            pausar();
+            return;
+        }
+
+        System.out.println("\nDados atuais:");
+        System.out.println(viatura.toStringDetalhado());
+        System.out.println("\n(Deixe em branco para manter o valor atual)\n");
+
+//        String marca = lerStringOpcional("Novo modelo [" + viatura.getMarca() + "]: ")
+    }
 
 
 
 
 
 
+    private void menuFicheiros() {
+        int opcao;
+        do {
+            limparEcra();
+            System.out.println("╔══════════════════════════════════════════════════════════════╗");
+            System.out.println("║                   GESTAO DE FICHEIROS                        ║");
+            System.out.println("╠══════════════════════════════════════════════════════════════╣");
+            System.out.println("║  1. Gravar dados (Memoria -> Ficheiro)                       ║");
+            System.out.println("║  2. Carregar dados (Ficheiro -> Memoria)                     ║");
+            System.out.println("║  0. Voltar                                                   ║");
+            System.out.println("╚══════════════════════════════════════════════════════════════╝");
 
+            opcao = lerInteiro("Opcao: ");
 
-
-
-
-
+            switch (opcao) {
+                case 1:
+                    limparEcra();
+                    System.out.println("=== GRAVAR DADOS ===\n");
+//                    gestorFicheiros.gravarDados(gestao);
+                    gestorFicheiros.guardarTudo(gestao);
+                    pausar();
+                    break;
+                case 2:
+                    limparEcra();
+                    System.out.println("=== CARREGAR DADOS ===\n");
+                    System.out.println("ATENCAO: Isto ira carregar os dados dos ficheiros para o programa.");
+//                    gestorFicheiros.carregarDados(gestao);
+                    gestorFicheiros.lerTudo();
+                    pausar();
+                    break;
+                case 0:
+                    break;
+                default:
+                    System.out.println("\nOpcao invalida!");
+                    pausar();
+            }
+        } while (opcao != 0);
+    }
 
     // ==================== METODOS AUXILIARES ====================
 

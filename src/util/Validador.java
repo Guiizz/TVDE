@@ -84,9 +84,13 @@ public class Validador {
         if (matricula == null || matricula.isEmpty()) {
             return false;
         }
-        // transformar a string em maiúsculas.
-        matricula = matricula.toUpperCase();
-        return true;
+
+        // 1. Limpar: Removemos hifens, espaços e passamos a maiúsculas temporariamente
+        // A expressão "[^A-Z0-9]" significa "tudo o que NÃO for letra (A-Z) ou número (0-9)"
+        String matriculaLimpa = matricula.toUpperCase().replaceAll("[^A-Z0-9]", "");
+
+        // 2. Verificar: Se tem exatamente 6 caracteres alfanuméricos
+        return matriculaLimpa.length() == 6;
     }
 
     // Validar carta de condução
@@ -162,15 +166,26 @@ public class Validador {
         return telefone;
     }
 
-    //Formata matricula (adiciona hifens)
+    // Formata matricula (adiciona hifens e mete em maiusculas)
     public static String formatarMatricula(String matricula) {
         if (matricula == null) {
             return "";
         }
-        if (matricula.length() == 6) {
-            return matricula.substring(0, 2) + "-" + matricula.substring(2, 4) + "-" + matricula.substring(4);
+
+        // 1. Passar para maiúsculas
+        String m = matricula.toUpperCase();
+
+        // 2. Remover tudo o que não interessa (espaços, traços antigos, pontos)
+        // Ficamos apenas com os 6 caracteres (ex: "aa 00 aa" vira "AA00AA")
+        String limpa = m.replaceAll("[^A-Z0-9]", "");
+
+        // 3. Se tiver o tamanho certo (6), formatamos XX-XX-XX
+        if (limpa.length() == 6) {
+            return limpa.substring(0, 2) + "-" + limpa.substring(2, 4) + "-" + limpa.substring(4, 6);
         }
-        return matricula;
+
+        // Se não tiver 6 digitos (caso algo falhe), devolvemos a original em maiúsculas
+        return m;
     }
 
     public static String getMensagemErroTelefone() {
