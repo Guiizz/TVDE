@@ -22,7 +22,15 @@ public class Menu {
         this.scanner = new Scanner(System.in);
         this.formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         this.gestorFicheiros = new GestorFicheiros();
-//        this.gestorFicheiros.carregarDados(this.gestao);
+        try {
+            System.out.println("A carregar dados...");
+            // Substitui a gestão vazia pela que vem do ficheiro
+            this.gestao = this.gestorFicheiros.lerTudo("empresa");
+            System.out.println("Dados carregados com sucesso!");
+        } catch (Exception e) {
+            // Se der erro (ex: 1ª vez a correr), não faz mal. Segue com a lista vazia.
+            System.out.println("Iniciado com base de dados vazia (ou ficheiros não encontrados).");
+        }
     }
     public void iniciar(){
         menuPrincipal();
@@ -60,8 +68,20 @@ public class Menu {
                     menuFicheiros();
                     break;
                 case 0:
-//                    System.out.println("\nA guardar as alterações...");
-//                    gestorFicheiros.gravarDados(this.gestao);
+                    String resposta = lerString("Deseja guardar as alterações antes de sair? (S/N): ");
+
+                    // Verifica se a resposta é "S" ou "s" (ignora maiúsculas/minúsculas)
+                    if (resposta.equalsIgnoreCase("S")) {
+                        try {
+                            System.out.println("A guardar dados...");
+                            gestorFicheiros.guardarTudo(gestao);
+                            System.out.println("Dados guardados com sucesso!");
+                        } catch (java.io.IOException e) {
+                            System.out.println("ERRO: Não foi possível guardar os dados: " + e.getMessage());
+                        }
+                    } else if (resposta.equalsIgnoreCase("N")){
+                        System.out.println("A sair sem guardar alterações...");
+                    }
                     break;
                 default:
                     System.out.println("\nOpcao invalida!");
@@ -511,16 +531,30 @@ public class Menu {
                 case 1:
                     limparEcra();
                     System.out.println("=== GRAVAR DADOS ===\n");
-//                    gestorFicheiros.gravarDados(gestao);
-                    gestorFicheiros.guardarTudo(gestao);
+                    try {
+                        gestorFicheiros.guardarTudo(gestao);
+                        System.out.println("\nDados gravados com sucesso!");
+                    } catch (java.io.IOException e) {
+                        System.out.println("\nErro ao gravar ficheiros: " + e.getMessage());
+                    }
                     pausar();
                     break;
                 case 2:
                     limparEcra();
                     System.out.println("=== CARREGAR DADOS ===\n");
-                    System.out.println("ATENCAO: Isto ira carregar os dados dos ficheiros para o programa.");
-//                    gestorFicheiros.carregarDados(gestao);
-                    gestorFicheiros.lerTudo();
+                    System.out.println("ATENCAO: Isto ira substituir os dados atuais pelos do ficheiro.");
+
+                    try {
+                        // "empresa" é o nome da pasta padrão.
+                        // O lerTudo devolve uma nova gestão, por isso atualizamos o "this.gestao"
+                        this.gestao = gestorFicheiros.lerTudo("TVDE");
+
+                        System.out.println("\nDados carregados com sucesso!");
+                    } catch (java.io.IOException e) {
+                        System.out.println("\nErro ao ler ficheiros: " + e.getMessage());
+                        System.out.println("Verifica se a pasta 'dados/empresa' existe e tem os ficheiros .txt");
+                    }
+
                     pausar();
                     break;
                 case 0:
