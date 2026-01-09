@@ -3,9 +3,6 @@ import UI.Menu;
 /**
  * Classe principal da aplicacao de gestao TVDE.
  * Ponto de entrada do programa.
- *
- * @author Grupo APOO
- * @version 1.0
  */
 public class TVDE {
 
@@ -17,8 +14,8 @@ public class TVDE {
     public static void main(String[] args) {
         System.out.println("╔══════════════════════════════════════════════════════════════╗");
         System.out.println("║                                                              ║");
-        System.out.println("║         SISTEMA DE GESTAO DE EMPRESA TVDE                    ║");
         System.out.println("║                                                              ║");
+        System.out.println("║               SISTEMA DE GESTAO DE EMPRESA TVDE              ║");
         System.out.println("║                                                              ║");
         System.out.println("║                                                              ║");
         System.out.println("╚══════════════════════════════════════════════════════════════╝");
