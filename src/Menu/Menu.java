@@ -1004,6 +1004,30 @@ public class Menu {
         pausar();
     }
 
+    /**
+     * Remove um condutor.
+     */
+    private void removerViagem() {
+        limparEcra();
+        System.out.println("=== REMOVER VIAGEM ===\n");
+
+        int id = lerInteiroPositivo("ID da viagem: ");
+        int resultado = gestao.removerCondutor(id);
+
+        switch (resultado) {
+            case 0:
+                System.out.println("\nCondutor removido com sucesso!");
+                break;
+            case -1:
+                System.out.println("\nCondutor nao encontrado!");
+                break;
+            case -2:
+                System.out.println("\nNao e possivel remover! O condutor tem viagens associadas.");
+                break;
+        }
+        pausar();
+    }
+
 
 
     private void menuRelStats() {
