@@ -1012,18 +1012,17 @@ public class Menu {
         System.out.println("=== REMOVER VIAGEM ===\n");
 
         int id = lerInteiroPositivo("ID da viagem: ");
-        int resultado = gestao.removerCondutor(id);
 
-        switch (resultado) {
-            case 0:
-                System.out.println("\nCondutor removido com sucesso!");
-                break;
-            case -1:
-                System.out.println("\nCondutor nao encontrado!");
-                break;
-            case -2:
-                System.out.println("\nNao e possivel remover! O condutor tem viagens associadas.");
-                break;
+        Viagem v = gestao.procurarViagemPorId(id);
+
+        if (v != null) {
+            System.out.println("Vai apagar: " + v.toString());
+            if (lerString("Deseja remover viagem? (S/N").equalsIgnoreCase("S")) {
+                gestao.removerViagem(id);
+                System.out.println("Viagem removida com sucesso.");
+            }
+        } else {
+            System.out.println("Viagem não encontrada.");
         }
         pausar();
     }
