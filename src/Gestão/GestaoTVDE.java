@@ -184,6 +184,38 @@ public class GestaoTVDE {
         return null;
     }
 
+    // === NOVOS MÉTODOS DE PROCURA ===
+
+    public Condutor procurarCondutorPorNumeroIdentificacao(String numId) {
+        for (int i = 0; i < numCondutores; i++) {
+            Condutor c = condutores.get(i);
+            if (c.getNumeroIdentificacao().equals(numId)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    public Condutor procurarCondutorPorCartaConducao(String carta) {
+        for (int i = 0; i < numCondutores; i++) {
+            Condutor c = condutores.get(i);
+            if (c.getCartaConducao().equals(carta)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    public Condutor procurarCondutorPorNss(String nss) {
+        for (int i = 0; i < numCondutores; i++) {
+            Condutor c = condutores.get(i);
+            if (c.getNumeroSegurancaSocial().equals(nss)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
     /**
      * Remove um condutor
      * Verifica se não tem viagens associadas.

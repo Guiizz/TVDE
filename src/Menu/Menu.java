@@ -125,62 +125,82 @@ public class Menu {
         limparEcra();
         System.out.println("=== ADICIONAR CONDUTOR ===\n");
 
-        // Nome (minimo 3 caracteres)
-        String nome = lerStringComValidacao("Nome (minimo 3 caracteres): ",3);
+        // Nome
+        String nome = lerStringComValidacao("Nome (minimo 3 caracteres): ", 3);
 
-        // NIF (9 digitos com validacao)
-        String nif;
-        do {
-            nif = lerString("NIF (9 digitos): ");
-            if (!Validador.validarNif(nif)){
-                System.out.println(Validador.getMensagemErroNif());
-            }
-            if (gestao.procurarCondutorPorNif(nif) != null) {    // Verificar se NIF ja existe
-                System.out.println("\nJa existe um condutor com este NIF!");
-            }
-        }while (!Validador.validarNif(nif) || gestao.procurarCondutorPorNif(nif) != null);
-
-        // Numero de identificacao (minimo 8 digitos)
+        // Numero de identificacao (Validacao formato + Unicidade)
         String numId;
+        boolean numIdExiste;
         do {
+            numIdExiste = false;
             numId = lerString("N. Identificacao (CC - minimo 8 digitos): ");
             if (!Validador.validarNumeroIdentificacao(numId)) {
                 System.out.println(Validador.getMensagemErroNumId());
+            } else if (gestao.procurarCondutorPorNumeroIdentificacao(numId) != null) {
+                System.out.println("Erro: Ja existe um condutor com este numero de identificacao!");
+                numIdExiste = true;
             }
-        }while (!Validador.validarNumeroIdentificacao(numId));
+        } while (!Validador.validarNumeroIdentificacao(numId) || numIdExiste);
 
 
-        // Carta de conducao
+        // Carta de conducao (Validacao formato + Unicidade)
         String carta;
+        boolean cartaExiste;
         do {
+            cartaExiste = false;
             carta = lerString("Carta de Conducao (ex: AB-123456): ");
-            if (!Validador.validarCartaConducao(carta)){
+            if (!Validador.validarCartaConducao(carta)) {
                 System.out.println(Validador.getMensagemErroCarta());
+            } else if (gestao.procurarCondutorPorCartaConducao(carta) != null) {
+                System.out.println("Erro: Ja existe um condutor com esta Carta de Conducao!");
+                cartaExiste = true;
             }
-        }while (!Validador.validarCartaConducao(carta));
+        } while (!Validador.validarCartaConducao(carta) || cartaExiste);
 
 
-        // Numero de Seguranca Social (11 digitos)
+        // Numero de Seguranca Social (Validacao formato + Unicidade)
         String nss;
+        boolean nssExiste;
         do {
+            nssExiste = false;
             nss = lerString("N. Seguranca Social (11 digitos): ");
-            if (!Validador.validarNss(nss)){
+            if (!Validador.validarNss(nss)) {
                 System.out.println(Validador.gerMensagemErroNss());
+            } else if (gestao.procurarCondutorPorNss(nss) != null) {
+                System.out.println("Erro: Ja existe um condutor com este NSS!");
+                nssExiste = true;
             }
-        }while (!Validador.validarNss(nss));
+        } while (!Validador.validarNss(nss) || nssExiste);
 
-        // Telemovel (9 digitos, comecar por 9, 2 ou 3)
+
+        // NIF (Validacao formato + Unicidade)
+        String nif;
+        boolean nifExiste;
+        do {
+            nifExiste = false;
+            nif = lerString("NIF (9 digitos): ");
+            if (!Validador.validarNif(nif)) {
+                System.out.println(Validador.getMensagemErroNif());
+            } else if (gestao.procurarCondutorPorNif(nif) != null) {
+                System.out.println("Erro: Ja existe um condutor com este NIF!");
+                nifExiste = true;
+            }
+        } while (!Validador.validarNif(nif) || nifExiste);
+
+
+        // Telemovel (Pode repetir? Normalmente sim, mas se quiseres bloquear é igual aos de cima)
         String tel;
         do {
             tel = lerString("Telemovel (9 digitos): ");
-            if (!Validador.validarTelefone(tel)){
+            if (!Validador.validarTelefone(tel)) {
                 System.out.println(Validador.getMensagemErroTelefone());
             }
-        }while (!Validador.validarTelefone(tel));
+        } while (!Validador.validarTelefone(tel));
 
-        // Morada (minimo 5 caracteres)
-        String morada = lerStringComValidacao("Morada (minimo 5 caracteres): ",5);
+        // Morada
+        String morada = lerStringComValidacao("Morada (minimo 5 caracteres): ", 5);
 
+        // Criar e adicionar
         Condutor condutor = new Condutor(nome, numId, carta, nss, nif, tel, morada);
 
         if (gestao.adicionarCondutor(condutor)) {
@@ -250,77 +270,124 @@ public class Menu {
         System.out.println(c.toStringDetalhado());
         System.out.println("\n(Deixe em branco para manter o valor atual)\n");
 
+        // 1. NOME
         String nome = lerStringOpcional("Novo nome [" + c.getNome() + "]: ");
-        if (!nome.isEmpty()){
-            if(Validador.validarComprimentoMinimo(nome, 3)){
+        if (!nome.isEmpty()) {
+            if (Validador.validarComprimentoMinimo(nome, 3)) {
                 c.setNome(nome);
-            }else {
-                System.out.println("Nome deve ter minimo 3 caracteres. Valor mantido.");
+            } else {
+                System.out.println("Nome inválido (mínimo 3 caracteres). Valor mantido.");
             }
         }
 
-
-        String nif = lerStringOpcional("Novo NIF [" + c.getNif() + "]: ");
-        if (!nif.isEmpty()) {
-            if (Validador.validarNif(nif)) {
-                // Verifica se existe e se não é o próprio condutor (caso insira o mesmo NIF)
-                Condutor existente = gestao.procurarCondutorPorNif(nif);
-                if (existente != null && existente.getId() != c.getId()) {
-                    System.out.println("\nJa existe um condutor com este NIF! Valor mantido.");
+        // 2. N. IDENTIFICAÇÃO (Com verificação de duplicado)
+        boolean numIdValido = false;
+        do {
+            String numId = lerStringOpcional("Novo N. Identificacao [" + c.getNumeroIdentificacao() + "]: ");
+            if (numId.isEmpty()) {
+                numIdValido = true; // Mantém o antigo
+            } else {
+                if (!Validador.validarNumeroIdentificacao(numId)) {
+                    System.out.println(Validador.getMensagemErroNumId());
                 } else {
-                    c.setNif(nif);
+                    // Verificar se existe em OUTRO condutor (ignoramos se for o próprio)
+                    Condutor existente = gestao.procurarCondutorPorNumeroIdentificacao(numId);
+                    if (existente != null && existente.getId() != c.getId()) {
+                        System.out.println("Erro: Este N. Identificacao ja pertence a outro condutor!");
+                    } else {
+                        c.setNumeroIdentificacao(numId);
+                        numIdValido = true;
+                    }
                 }
+            }
+        } while (!numIdValido);
+
+        // 3. CARTA DE CONDUÇÃO (Com verificação de duplicado)
+        boolean cartaValida = false;
+        do {
+            String carta = lerStringOpcional("Nova Carta de Conducao [" + c.getCartaConducao() + "]: ");
+            if (carta.isEmpty()) {
+                cartaValida = true;
             } else {
-                System.out.println(Validador.getMensagemErroNif() + " Valor mantido.");
+                if (!Validador.validarCartaConducao(carta)) {
+                    System.out.println(Validador.getMensagemErroCarta());
+                } else {
+                    Condutor existente = gestao.procurarCondutorPorCartaConducao(carta);
+                    if (existente != null && existente.getId() != c.getId()) {
+                        System.out.println("Erro: Esta Carta de Conducao ja esta registada noutro condutor!");
+                    } else {
+                        c.setCartaConducao(carta);
+                        cartaValida = true;
+                    }
+                }
             }
-        }
+        } while (!cartaValida);
 
-
-        String numId = lerStringOpcional("Novo N. Identificacao [" + c.getNumeroIdentificacao() + "]: ");
-        if (!numId.isEmpty()) {
-            if (Validador.validarNumeroIdentificacao(numId)) {
-                c.setNumeroIdentificacao(numId);
+        // 4. SEGURANÇA SOCIAL (Com verificação de duplicado)
+        boolean nssValido = false;
+        do {
+            String nss = lerStringOpcional("Novo N. Seguranca Social [" + c.getNumeroSegurancaSocial() + "]: ");
+            if (nss.isEmpty()) {
+                nssValido = true;
             } else {
-                System.out.println(Validador.getMensagemErroNumId() + " Valor mantido.");
+                if (!Validador.validarNss(nss)) {
+                    System.out.println(Validador.gerMensagemErroNss());
+                } else {
+                    Condutor existente = gestao.procurarCondutorPorNss(nss);
+                    if (existente != null && existente.getId() != c.getId()) {
+                        System.out.println("Erro: Este NSS ja pertence a outro condutor!");
+                    } else {
+                        c.setNumeroSegurancaSocial(nss);
+                        nssValido = true;
+                    }
+                }
             }
-        }
+        } while (!nssValido);
 
-
-        String carta = lerStringOpcional("Nova Carta de Conducao [" + c.getCartaConducao() + "]: ");
-        if (!carta.isEmpty()) {
-            if (Validador.validarCartaConducao(carta)){
-                c.setCartaConducao(carta);
-            }else {
-                System.out.println(Validador.getMensagemErroCarta() + " Valor mantido");
-            }
-        }
-
-
-        String nss = lerStringOpcional("Novo N. Seguranca Social [" + c.getNumeroSegurancaSocial() + "]: ");
-        if (!nss.isEmpty()) {
-            if (Validador.validarNss(nss)){
-                c.setNumeroSegurancaSocial(nss);
+        // 5. NIF (Com verificação de duplicado)
+        boolean nifValido = false;
+        do {
+            String nif = lerStringOpcional("Novo NIF [" + c.getNif() + "]: ");
+            if (nif.isEmpty()) {
+                nifValido = true;
             } else {
-                System.out.println(Validador.gerMensagemErroNss() + " Valor mantido.");
+                if (!Validador.validarNif(nif)) {
+                    System.out.println(Validador.getMensagemErroNif());
+                } else {
+                    Condutor existente = gestao.procurarCondutorPorNif(nif);
+                    if (existente != null && existente.getId() != c.getId()) {
+                        System.out.println("Erro: Este NIF ja pertence a outro condutor!");
+                    } else {
+                        c.setNif(nif);
+                        nifValido = true;
+                    }
+                }
             }
-        }
+        } while (!nifValido);
 
-
-        String tel = lerStringOpcional("Novo Telemovel [" + c.getTelemovel() + "]: ");
-        if (!tel.isEmpty()) {
-            if (Validador.validarTelefone(tel)) {
-                c.setTelemovel(tel);
+        // 6. TELEMOVEL
+        boolean telValido = false;
+        do {
+            String tel = lerStringOpcional("Novo Telemovel [" + c.getTelemovel() + "]: ");
+            if (tel.isEmpty()) {
+                telValido = true;
             } else {
-                System.out.println(Validador.getMensagemErroTelefone() + " Valor mantido.");
+                if (Validador.validarTelefone(tel)) {
+                    c.setTelemovel(tel);
+                    telValido = true;
+                } else {
+                    System.out.println(Validador.getMensagemErroTelefone());
+                }
             }
-        }
+        } while (!telValido);
 
+        // 7. MORADA
         String morada = lerStringOpcional("Nova Morada [" + c.getMorada() + "]: ");
         if (!morada.isEmpty()) {
             if (Validador.validarComprimentoMinimo(morada, 5)) {
                 c.setMorada(morada);
             } else {
-                System.out.println(Validador.getMensagemErroMorada() + " Valor mantido");
+                System.out.println(Validador.getMensagemErroMorada() + " Valor mantido.");
             }
         }
 
