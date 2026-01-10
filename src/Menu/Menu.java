@@ -5,6 +5,7 @@ import Classes.*;
 import Validador.Validador;
 import Ficheiros.GestorFicheiros;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -12,13 +13,13 @@ import java.util.Scanner;
 public class Menu {
     private GestaoTVDE gestao;
     private Scanner scanner;
-    private DateTimeFormatter formatter;
+    private DateTimeFormatter data;
     private GestorFicheiros gestorFicheiros;
 
     public Menu() {
         this.gestao = new GestaoTVDE();
         this.scanner = new Scanner(System.in);
-        this.formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        this.data = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         this.gestorFicheiros = new GestorFicheiros();
         try {
             System.out.println("A carregar dados...");
@@ -981,20 +982,14 @@ public class Menu {
         }
     }
 
-    /**
-     * Ajusta o tamanho de um texto para caber numa coluna.
-     * @param texto Texto original
-     * @param tamanho Tamanho desejado
-     * @return Texto ajustado
-     */
-    private String ajustarTexto(String texto, int tamanho) {
-        if (texto.length() >= tamanho) {
-            return texto.substring(0, tamanho);
+    private LocalDateTime lerDataHora(String mensagem){
+        while (true) {
+            try {
+                String dataHora = lerString(mensagem + "(dd-MM-yyyy HH:mm): ");
+                return LocalDateTime.parse(dataHora, data);
+            } catch (Exception erro) {
+                System.out.println("Erro: Formato inválido! Use o formato: dia-mês-ano hora:minutos (Ex: 15-01-2026 14:30)");
+            }
         }
-        StringBuilder sb = new StringBuilder(texto);
-        while (sb.length() < tamanho) {
-            sb.append(" ");
-        }
-        return sb.toString();
     }
 }
