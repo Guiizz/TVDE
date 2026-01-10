@@ -41,7 +41,7 @@ public class Cliente {
     }
 
     /**
-     * Construtor com ID especifico.
+     * Construtor com ID especifico (usado para leitura de ficheiros).
      *
      * @param id Identificador do cliente
      * @param nome Nome do cliente

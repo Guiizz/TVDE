@@ -728,6 +728,177 @@ public class Menu {
         pausar();
     }
 
+    private void menuViagens() {
+        int opcao;
+        do {
+            limparEcra();
+            System.out.println("╔══════════════════════════════════════════════════════════════╗");
+            System.out.println("║                   GESTÃO DE VIAGENS                          ║");
+            System.out.println("╠══════════════════════════════════════════════════════════════╣");
+            System.out.println("║  1. Adicionar viagem                                         ║");
+            System.out.println("║  2. Listar todas as viagens                                  ║");
+            System.out.println("║  3. Consultar viagem                                         ║");
+            System.out.println("║  4. Alterar viagem                                           ║");
+            System.out.println("║  5. Remover viagem                                           ║");
+            System.out.println("║  0. Voltar                                                   ║");
+            System.out.println("╚══════════════════════════════════════════════════════════════╝");
+
+            opcao = lerInteiro("Opcao: ");
+
+            switch (opcao) {
+                case 1:
+                    adicionarViagem();
+                    break;
+                case 2:
+                    listarViagens();
+                    break;
+                case 3:
+                    consultarViagem();
+                    break;
+                case 4:
+                    alterarViagem();
+                    break;
+                case 5:
+                    removerViagem();
+                    break;
+                case 0:
+                    break;
+                default:
+                    System.out.println("\nOpcao invalida!");
+                    pausar();
+            }
+        } while (opcao != 0);
+    }
+
+    /**
+     * Adiciona uma nova viagem
+     */
+    private void adicionarViagem() {
+        limparEcra();
+        System.out.println("=== ADICIONAR VIAGEM ===\n");
+
+        //VERIFICAR SE EXISTE OS DADOS NECESSARIOS
+        if (gestao.getNumeroCondutores() == 0) {
+            System.out.println("Não existe condutores registados!");
+            pausar();
+            return;
+        }
+        if (gestao.getNumeroViaturas() == 0) {
+            System.out.println("Não existe viaturas registados!");
+            pausar();
+            return;
+        }
+        if (gestao.getNumeroClientes() == 0) {
+            System.out.println("Não existe clientes registados!");
+            pausar();
+            return;
+        }
+
+        //Selecionar condutor
+        System.out.println("Condutores disponiveis:");
+        ArrayList<Condutor> condutores = gestao.getCondutores();
+        int numCondutores = gestao.getNumeroCondutores();
+        for (int i = 0; i < numCondutores; i++){
+            System.out.println(condutores.get(i).toString());
+        }
+        int idCondutor = lerInteiroPositivo("\nID do condutor: ");
+        if (gestao.procurarCondutorPorId(idCondutor) == null) {
+            System.out.println("\nCondutor não encontrado!");
+            pausar();
+            return;
+        }
+        //Selecionar viatua
+        System.out.println("Viaturas disponiveis:");
+        ArrayList<Viatura> viaturas = gestao.getViaturas();
+        int numViaturas = gestao.getNumeroViaturas();
+        for (int i = 0; i < numViaturas; i++){
+            System.out.println(viaturas.get(i).toString());
+        }
+        int idViatura = lerInteiroPositivo("\nID do condutor: ");
+        if (gestao.procurarViaturaPorId(idViatura) == null) {
+            System.out.println("\nViatura não encontrada!");
+            pausar();
+            return;
+        }
+        //Selecionar cliente
+        System.out.println("Clientes disponiveis:");
+        ArrayList<Cliente> clientes = gestao.getClientes();
+        int numCliente = gestao.getNumeroClientes();
+        for (int i = 0; i < numCliente; i++){
+            System.out.println(clientes.get(i).toString());
+        }
+        int idCliente = lerInteiroPositivo("\nID do condutor: ");
+        if (gestao.procurarClientePorId(idCliente) == null) {
+            System.out.println("\nCliente não encontrado!");
+            pausar();
+            return;
+        }
+
+        //Ler datas
+        LocalDateTime inicio = lerDataHora("Data/Hora inicio");
+        LocalDateTime fim;
+        do {
+            fim = lerDataHora("Data/Hora Fim");
+            if (fim.isBefore(inicio)) {
+                System.out.println("A Data/Hora de fim não pode ser anterior ao inico!");
+            }
+        } while(fim.isBefore(inicio));
+        String origem = lerStringComValidacao("Origem: ",3);
+        String destino = lerStringComValidacao("Destino: ",3);
+        double kms = lerDoublePositivo("Distância (kms): ");
+        double custo = lerDoublePositivo("Custo (€): ");
+
+        Viagem novaViagem = new Viagem(idCondutor, idCliente, idViatura, inicio, fim, origem, destino, kms, custo);
+
+        if (gestao.adicionarViagem(novaViagem)){
+            System.out.println("\nViagem registada com sucesso!");
+        } else {
+            System.out.println("\nErro: Sobreposição de horario detetada!");
+        }
+        pausar();
+    }
+
+    /**
+     * Lista todos as viagens.
+     */
+    private void listarViagens() {
+        limparEcra();
+        System.out.println("=== LISTA DE VIAGENS ===\n");
+
+        ArrayList<Viagem> viagems = gestao.getViagens();
+        int numViagens = gestao.getNumeroViagens();
+
+        if (numViagens == 0) {
+            System.out.println("Nenhuma viagem registada.");
+        } else {
+            for (int i = 0; i < numViagens; i++) {
+                System.out.println(viagems.get(i).toString());
+            }
+            System.out.println("\nTotal: " + numViagens + " Viagem(es)");
+        }
+        pausar();
+    }
+
+    /**
+     * Consulta uma viagem pelo ID.
+     */
+    private void consultarViagem() {
+        limparEcra();
+        System.out.println("=== CONSULTAR VIAGEM ===\n");
+
+        int id = lerInteiroPositivo("ID da viagem: ");
+        Viagem v = gestao.procurarViagemPorId(id);
+
+        if (v != null) {
+            System.out.println("\n" + v.toStringDetalhado());
+        } else {
+            System.out.println("\nViagem nao encontrada!");
+        }
+        pausar();
+    }
+
+
+
     private void menuRelStats() {
         int opcao;
         do {

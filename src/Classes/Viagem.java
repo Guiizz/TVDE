@@ -58,7 +58,7 @@ public class Viagem {
     }
 
     /**
-     * Construtor com ID especifico
+     * Construtor com ID especifico (usado para leitura de ficheiros).
      *
      * @param id Identificador da viagem
      * @param idCondutor ID do condutor
