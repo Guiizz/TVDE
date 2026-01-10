@@ -33,7 +33,6 @@ public class TVDE {
 //falta fazer
 //        menus reservas e viagens
 //        voltar a meio de açoes
-//        menu relstats
 //        fazer checklist de todos os topicos que o stor pediu
 //        rever o codigo todo
 //        java docs do resto

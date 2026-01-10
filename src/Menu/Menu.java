@@ -50,7 +50,6 @@ public class Menu {
             System.out.println("║  5. Gestao de Viagens                                        ║");
             System.out.println("║  6. Relatorios e Estatisticas                                ║");
             System.out.println("║  7. Gestao de Ficheiros                                      ║");
-            System.out.println("║  8. Configuracoes da Empresa                                 ║");
             System.out.println("║  0. Sair                                                     ║");
             System.out.println("╚══════════════════════════════════════════════════════════════╝");
 
