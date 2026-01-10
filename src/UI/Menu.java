@@ -64,6 +64,9 @@ public class Menu {
                 case 2:
                     menuViaturas();
                     break;
+                case 6:
+                    menuRelStats();
+                    break;
                 case 7:
                     menuFicheiros();
                     break;
@@ -259,19 +262,19 @@ public class Menu {
 
 
         String nif = lerStringOpcional("Novo NIF [" + c.getNif() + "]: ");
-        do {
-            if (!nif.isEmpty()) {
-                if (Validador.validarNif(nif)) {
-                    if (gestao.procurarCondutorPorNif(nif) != null) {    // Verificar se NIF ja existe
-                        System.out.println("\nJa existe um condutor com este NIF!");
-                    }else {
-                        c.setNif(nif);
-                    }
+        if (!nif.isEmpty()) {
+            if (Validador.validarNif(nif)) {
+                // Verifica se existe e se não é o próprio condutor (caso insira o mesmo NIF)
+                Condutor existente = gestao.procurarCondutorPorNif(nif);
+                if (existente != null && existente.getId() != c.getId()) {
+                    System.out.println("\nJa existe um condutor com este NIF! Valor mantido.");
                 } else {
-                    System.out.println(Validador.getMensagemErroNif() + " Valor mantido.");
+                    c.setNif(nif);
                 }
+            } else {
+                System.out.println(Validador.getMensagemErroNif() + " Valor mantido.");
             }
-        }while (Validador.validarNif(nif) || gestao.procurarCondutorPorNif(nif) != null);
+        }
 
 
         String numId = lerStringOpcional("Novo N. Identificacao [" + c.getNumeroIdentificacao() + "]: ");
@@ -496,7 +499,277 @@ public class Menu {
     }
 
 
+    private void menuClientes() {
+        int opcao;
+        do {
+            limparEcra();
+            System.out.println("╔══════════════════════════════════════════════════════════════╗");
+            System.out.println("║                   GESTAO DE CLIENTES                         ║");
+            System.out.println("╠══════════════════════════════════════════════════════════════╣");
+            System.out.println("║  1. Adicionar cliente                                        ║");
+            System.out.println("║  2. Listar todos os clientes                                 ║");
+            System.out.println("║  3. Consultar cliente                                        ║");
+            System.out.println("║  4. Alterar cliente                                          ║");
+            System.out.println("║  5. Remover cliente                                          ║");
+            System.out.println("║  0. Voltar                                                   ║");
+            System.out.println("╚══════════════════════════════════════════════════════════════╝");
 
+            opcao = lerInteiro("Opcao: ");
+
+            switch (opcao) {
+                case 1:
+                    adicionarCliente();
+                    break;
+                case 2:
+                    listarCliente();
+                    break;
+                case 3:
+                    consultarCliente();
+                    break;
+                case 4:
+                    alterarCliente();
+                    break;
+                case 5:
+                    removerCliente();
+                    break;
+                case 0:
+                    break;
+                default:
+                    System.out.println("\nOpcao invalida!");
+                    pausar();
+            }
+        } while (opcao != 0);
+    }
+
+    private void adicionarCliente() {
+        limparEcra();
+        System.out.println("=== ADICIONAR CLIENTE ===\n");
+
+        // Nome (minimo 3 caracteres)
+        String nome = lerStringComValidacao("Nome (minimo 3 caracteres): ",3);
+
+
+        // NIF (9 digitos com validacao)
+        String nif;
+        do {
+            nif = lerString("NIF (9 digitos): ");
+            if (!Validador.validarNif(nif)){
+                System.out.println(Validador.getMensagemErroNif());
+            }
+            // Verificar se NIF ja existe
+            if (gestao.procurarClientePorNif(nif) != null) {
+                System.out.println("\nJa existe um cliente com este NIF!");
+            }
+        }while (!Validador.validarNif(nif) || gestao.procurarClientePorNif(nif) != null);
+
+
+
+
+        // Telemovel (9 digitos, comecar por 9, 2 ou 3)
+        String tel;
+        do {
+            tel = lerString("Telemovel (9 digitos): ");
+            if (!Validador.validarTelefone(tel)){
+                System.out.println(Validador.getMensagemErroTelefone());
+            }
+        }while (!Validador.validarTelefone(tel));
+
+        // Morada (minimo 5 caracteres)
+        String morada = lerStringComValidacao("Morada (minimo 5 caracteres): ",5);
+
+        // Email (verificar se o email tem o @)
+        String email;
+        do {
+            email = lerString("Email: ");
+            if (!Validador.validarEmail(email)){
+                System.out.println(Validador.getMensagemErroEmail());
+            }
+        }while (!Validador.validarEmail(email));
+
+        Cliente cliente = new Cliente(nome, nif, tel, morada, email);
+
+        if (gestao.adicionarCliente(cliente)) {
+            System.out.println("\nCliente adicionado com sucesso! (ID: " + cliente.getId() + ")");
+        } else {
+            System.out.println("\nErro ao adicionar cliente!");
+        }
+
+        pausar();
+    }
+
+    /**
+     * Lista todos os clientes.
+     */
+    private void listarCliente() {
+        limparEcra();
+        System.out.println("=== LISTA DE CLIENTES ===\n");
+
+        ArrayList<Cliente> clientes = gestao.getClientes();
+        int numClientes = gestao.getNumeroClientes();
+
+        if (numClientes == 0) {
+            System.out.println("Nenhum cliente registado.");
+        } else {
+            for (int i = 0; i < numClientes; i++) {
+                System.out.println(clientes.get(i).toString());
+            }
+            System.out.println("\nTotal: " + numClientes + " cliente(s)");
+        }
+        pausar();
+    }
+
+    /**
+     * Consulta um cliente pelo ID.
+     */
+    private void consultarCliente() {
+        limparEcra();
+        System.out.println("=== CONSULTAR CLIENTE ===\n");
+
+        int id = lerInteiroPositivo("ID do cliente: ");
+        Cliente c = gestao.procurarClientePorId(id);
+
+        if (c != null) {
+            System.out.println("\n" + c.toStringDetalhado());
+        } else {
+            System.out.println("\nCliente nao encontrado!");
+        }
+        pausar();
+    }
+
+    /**
+     * Altera os dados de um cliente.
+     */
+    private void alterarCliente() {
+        limparEcra();
+        System.out.println("=== ALTERAR CLIENTE ===\n");
+
+        int id = lerInteiroPositivo("ID do cliente: ");
+        Cliente c = gestao.procurarClientePorId(id);
+
+        if (c == null) {
+            System.out.println("\nCliente nao encontrado!");
+            pausar();
+            return;
+        }
+
+        System.out.println("\nDados atuais:");
+        System.out.println(c.toStringDetalhado());
+        System.out.println("\n(Deixe em branco para manter o valor atual)\n");
+
+        String nome = lerStringOpcional("Novo nome [" + c.getNome() + "]: ");
+        if (!nome.isEmpty()){
+            if(Validador.validarComprimentoMinimo(nome, 3)){
+                c.setNome(nome);
+            }else {
+                System.out.println("Nome deve ter minimo 3 caracteres. Valor mantido.");
+            }
+        }
+
+        String nif = lerStringOpcional("Novo NIF [" + c.getNif() + "]: ");
+        if (!nif.isEmpty()) {
+            if (Validador.validarNif(nif)) {
+                c.setNif(nif);
+            } else {
+                System.out.println(Validador.getMensagemErroNif() + " Valor mantido.");
+            }
+        }
+
+        String tel = lerStringOpcional("Novo Telemovel [" + c.getTelemovel() + "]: ");
+        if (!tel.isEmpty()) {
+            if (Validador.validarTelefone(tel)) {
+                c.setTelemovel(tel);
+            } else {
+                System.out.println(Validador.getMensagemErroTelefone() + " Valor mantido.");
+            }
+        }
+
+        String morada = lerStringOpcional("Nova Morada [" + c.getMorada() + "]: ");
+        if (!morada.isEmpty()) {
+            if (Validador.validarComprimentoMinimo(morada, 5)) {
+                c.setMorada(morada);
+            } else {
+                System.out.println(Validador.getMensagemErroMorada() + " Valor mantido");
+            }
+        }
+
+        String email = lerStringOpcional("Novo Email [" + c.getEmail() + "]: ");
+        if (!email.isEmpty()) {
+            if (Validador.validarEmail(email)) {
+                c.setEmail(email);
+            } else {
+                System.out.println(Validador.getMensagemErroEmail() + " Valor mantido.");
+            }
+        }
+
+        System.out.println("\nCliente atualizado com sucesso!");
+        pausar();
+    }
+
+    /**
+     * Remove um cliente.
+     */
+    private void removerCliente() {
+        limparEcra();
+        System.out.println("=== REMOVER CLIENTE ===\n");
+
+        int id = lerInteiroPositivo("ID do cliente: ");
+        int resultado = gestao.removerCliente(id);
+
+        switch (resultado) {
+            case 0:
+                System.out.println("\nCliente removido com sucesso!");
+                break;
+            case -1:
+                System.out.println("\nCliente nao encontrado!");
+                break;
+            case -2:
+                System.out.println("\nNao e possivel remover! O condutor tem viagens associadas.");
+                break;
+        }
+        pausar();
+    }
+
+    private void menuRelStats() {
+        int opcao;
+        do {
+            limparEcra();
+            System.out.println("╔══════════════════════════════════════════════════════════════╗");
+            System.out.println("║             MENU DE RELATÓRIOS E ESTATÍSTICAS                ║");
+            System.out.println("╠══════════════════════════════════════════════════════════════╣");
+            System.out.println("║  1. Apresentar a lista de clientes de uma viatura            ║");
+            System.out.println("║  2. Listar todos os condutores                               ║");
+            System.out.println("║  3. Consultar condutor                                       ║");
+            System.out.println("║  4. Alterar condutor                                         ║");
+            System.out.println("║  5. Remover condutor                                         ║");
+            System.out.println("║  0. Voltar                                                   ║");
+            System.out.println("╚══════════════════════════════════════════════════════════════╝");
+
+            opcao = lerInteiro("Opcao: ");
+
+            switch (opcao) {
+                case 1:
+                    adicionarCondutor();
+                    break;
+                case 2:
+                    listarCondutores();
+                    break;
+                case 3:
+                    consultarCondutor();
+                    break;
+                case 4:
+                    alterarCondutor();
+                    break;
+                case 5:
+                    removerCondutor();
+                    break;
+                case 0:
+                    break;
+                default:
+                    System.out.println("\nOpcao invalida!");
+                    pausar();
+            }
+        } while (opcao != 0);
+    }
 
 
 
@@ -534,7 +807,7 @@ public class Menu {
                     try {
                         // "empresa" é o nome da pasta padrão.
                         // O lerTudo devolve uma nova gestão, por isso atualizamos o "this.gestao"
-                        this.gestao = gestorFicheiros.lerTudo("TVDE");
+                        this.gestao = gestorFicheiros.lerTudo("empresa");
 
                         System.out.println("\nDados carregados com sucesso!");
                     } catch (java.io.IOException e) {

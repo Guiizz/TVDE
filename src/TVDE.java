@@ -30,3 +30,13 @@ public class TVDE {
         System.out.println("\nSistema encerrado.");
     }
 }
+//falta fazer
+//        menus acabar o meunu condutor os detalhes
+//        acabar menu viaturas e detalhes
+//        acabar menu clientes e detalhes
+//        menus reservas e viagens
+//        voltar a meio de açoes
+//        menu relstats
+//        fazer checklist de todos os topicos que o stor pediu
+//        rever o codigo todo
+//        java docs do resto
