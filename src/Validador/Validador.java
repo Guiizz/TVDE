@@ -96,12 +96,14 @@ public class Validador {
     // Validar carta de condução
 
     public static boolean validarCartaConducao(String carta) {
-        if (carta == null || carta.isEmpty()) {
-            return false;
-        }
+        if (carta == null) return false;
 
+        // 1. Limpar: Remove hifens e espaços, passa a maiúsculas
+        String limpa = carta.toUpperCase().replaceAll("[^A-Z0-9]", "");
 
-        return true;
+        // 2. Verificar formato: Deve ter exatamente 2 Letras + 6 Dígitos
+        // A expressão "[A-Z]{2}[0-9]{6}" garante isso.
+        return limpa.matches("[A-Z]{2}[0-9]{6}");
     }
 
     // Validar endereço de e-mail.
@@ -186,6 +188,21 @@ public class Validador {
 
         // Se não tiver 6 digitos (caso algo falhe), devolvemos a original em maiúsculas
         return m;
+    }
+
+    // Formata matricula (adiciona hifens e mete em maiusculas)
+    public static String formatarCartaConducao(String carta) {
+        if (carta == null) return "";
+
+        // 1. Limpar e Uppercase
+        String limpa = carta.toUpperCase().replaceAll("[^A-Z0-9]", "");
+
+        // 2. Se tiver o formato correto (8 chars), adiciona o hífen
+        if (limpa.length() == 8) {
+            return limpa.substring(0, 2) + "-" + limpa.substring(2);
+        }
+
+        return carta.toUpperCase();
     }
 
     public static String getMensagemErroTelefone() {

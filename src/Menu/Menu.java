@@ -148,15 +148,21 @@ public class Menu {
         boolean cartaExiste;
         do {
             cartaExiste = false;
+            // O utilizador pode escrever "ab123456" à vontade
             carta = lerString("Carta de Conducao (ex: AB-123456): ");
+
+            // O validador agora é "inteligente" e aceita sem hifens
             if (!Validador.validarCartaConducao(carta)) {
                 System.out.println(Validador.getMensagemErroCarta());
-            } else if (gestao.procurarCondutorPorCartaConducao(carta) != null) {
+            }
+            // IMPORTANTE: Formatar antes de verificar se existe, para comparar "maçãs com maçãs"
+            else if (gestao.procurarCondutorPorCartaConducao(Validador.formatarCartaConducao(carta)) != null) {
                 System.out.println("Erro: Ja existe um condutor com esta Carta de Conducao!");
                 cartaExiste = true;
             }
         } while (!Validador.validarCartaConducao(carta) || cartaExiste);
 
+        carta = Validador.formatarCartaConducao(carta);
 
         // Numero de Seguranca Social (Validacao formato + Unicidade)
         String nss;
@@ -305,18 +311,22 @@ public class Menu {
         // 3. CARTA DE CONDUÇÃO (Com verificação de duplicado)
         boolean cartaValida = false;
         do {
-            String carta = lerStringOpcional("Nova Carta de Conducao [" + c.getCartaConducao() + "]: ");
-            if (carta.isEmpty()) {
-                cartaValida = true;
+            String inputCarta = lerStringOpcional("Nova Carta de Conducao [" + c.getCartaConducao() + "]: ");
+            if (inputCarta.isEmpty()) {
+                cartaValida = true; // Mantém a antiga
             } else {
-                if (!Validador.validarCartaConducao(carta)) {
+                if (!Validador.validarCartaConducao(inputCarta)) {
                     System.out.println(Validador.getMensagemErroCarta());
                 } else {
-                    Condutor existente = gestao.procurarCondutorPorCartaConducao(carta);
+                    // Formata temporariamente para verificar duplicados
+                    String cartaFormatada = Validador.formatarCartaConducao(inputCarta);
+
+                    Condutor existente = gestao.procurarCondutorPorCartaConducao(cartaFormatada);
                     if (existente != null && existente.getId() != c.getId()) {
                         System.out.println("Erro: Esta Carta de Conducao ja esta registada noutro condutor!");
                     } else {
-                        c.setCartaConducao(carta);
+                        // === AQUI: Guarda a versão formatada ===
+                        c.setCartaConducao(cartaFormatada);
                         cartaValida = true;
                     }
                 }
