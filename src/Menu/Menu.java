@@ -1,12 +1,10 @@
-package UI;
+package Menu;
 
-import Controller.GestaoTVDE;
-import Model.*;
-import util.Validador;
-import ficheiros.GestorFicheiros;
+import Gestão.GestaoTVDE;
+import Classes.*;
+import Validador.Validador;
+import Ficheiros.GestorFicheiros;
 
-import java.nio.channels.ScatteringByteChannel;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -807,7 +805,7 @@ public class Menu {
                     try {
                         // "empresa" é o nome da pasta padrão.
                         // O lerTudo devolve uma nova gestão, por isso atualizamos o "this.gestao"
-                        this.gestao = gestorFicheiros.lerTudo("empresa");
+                        this.gestao = gestorFicheiros.lerTudo("Empresa");
 
                         System.out.println("\nDados carregados com sucesso!");
                     } catch (java.io.IOException e) {

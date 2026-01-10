@@ -1,4 +1,4 @@
-package Model;
+package Classes;
 
 /**
  * Classe que representa um cliente da empresa TVDE.

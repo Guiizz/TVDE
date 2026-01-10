@@ -1,4 +1,4 @@
-package Model;
+package Classes;
 
 /** Classe que representa um condutor da empresa TVDE. */
 public class Condutor {

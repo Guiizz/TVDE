@@ -1,4 +1,4 @@
-package util;
+package Validador;
 
 public class Validador {
     // Validar um numero de telefone (9 digitos)

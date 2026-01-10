@@ -1,4 +1,4 @@
-import UI.Menu;
+import Menu.Menu;
 
 /**
  * Classe principal da aplicacao de gestao TVDE.

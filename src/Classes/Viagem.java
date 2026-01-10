@@ -1,7 +1,7 @@
-package Model;
+package Classes;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+
 /** Classe que representa uma viagem realizada. */
 public class Viagem {
 

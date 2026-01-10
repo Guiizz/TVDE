@@ -1,10 +1,12 @@
-package Controller;
-import Model.*;
+package Gestão;
+import Classes.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class GestaoTVDE {
+    /** Nome da empresa */
+    private String nomeEmpresa;
     /** Lista de condutores */
     private ArrayList<Condutor> condutores;
     /** Lista de viaturas */
@@ -34,6 +36,7 @@ public class GestaoTVDE {
      * Construtor da classe GestaoTVDE.
      */
     public GestaoTVDE () {
+        this.nomeEmpresa = "TVDE";
         this.condutores = new ArrayList<Condutor>();
         this.viaturas = new ArrayList<Viatura>();
         this.clientes = new ArrayList<Cliente>();
@@ -49,6 +52,22 @@ public class GestaoTVDE {
     }
 
     // ==================== GETTERS E SETTERS ====================
+
+    /**
+     * Obtem o nome da empresa.
+     * @return nome da empresa
+     */
+    public String getNomeEmpresa() {
+        return nomeEmpresa;
+    }
+
+    /**
+     * Define o nome da empresa.
+     * @param nomeEmpresa novo nome da empresa
+     */
+    public void setNomeEmpresa(String nomeEmpresa) {
+        this.nomeEmpresa = nomeEmpresa;
+    }
 
     /**
      * Obtem o preço por km

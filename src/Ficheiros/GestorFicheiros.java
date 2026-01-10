@@ -1,7 +1,7 @@
-package ficheiros;
+package Ficheiros;
 
-import Controller.GestaoTVDE;
-import Model.*;
+import Gestão.GestaoTVDE;
+import Classes.*;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -69,7 +69,7 @@ public class GestorFicheiros {
      */
     public void guardarTudo(GestaoTVDE gestao) throws IOException {
 
-        String nomeEmpresa = gestao.getNome();
+        String nomeEmpresa = gestao.getNomeEmpresa();
         if (nomeEmpresa == null || nomeEmpresa.trim().isEmpty()) {
             nomeEmpresa = "empresa";
         }
@@ -229,7 +229,7 @@ public class GestorFicheiros {
         Reserva.setContadorId(1);
 
         GestaoTVDE gestao = new GestaoTVDE();
-        gestao.setNome(nomeEmpresa);
+        gestao.setNomeEmpresa(nomeEmpresa);
 
         // preços (se não houver ficheiro, fica default)
         lerEmpresa(new File(pastaEmpresa, FicheiroEmpresa), gestao);

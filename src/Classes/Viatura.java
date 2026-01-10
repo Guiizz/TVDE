@@ -1,4 +1,4 @@
-package Model;
+package Classes;
 
 /** Classe que representa uma viatura da empresa TVDE. */
 public class Viatura {
