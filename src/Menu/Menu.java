@@ -194,10 +194,10 @@ public class Menu {
         } while (!Validador.validarNif(nif) || nifExiste);
 
 
-        // Telemovel (Pode repetir? Normalmente sim, mas se quiseres bloquear é igual aos de cima)
+        // Telemovel
         String tel;
         do {
-            tel = lerString("Telemovel (9 digitos): ");
+            tel = lerString("Telemovel: ");
             if (!Validador.validarTelefone(tel)) {
                 System.out.println(Validador.getMensagemErroTelefone());
             }
@@ -461,7 +461,7 @@ public class Menu {
                     alterarViatura();
                     break;
                 case 5:
-                    removerCondutor();
+                    removerViatura();
                     break;
                 case 0:
                     break;
@@ -554,24 +554,139 @@ public class Menu {
         pausar();
     }
 
-    private void alterarViatura (){
+    private void alterarViatura() {
         limparEcra();
         System.out.println("=== ALTERAR VIATURA ===\n");
 
         int id = lerInteiroPositivo("ID da viatura: ");
-        Viatura viatura = gestao.procurarViaturaPorId(id);
+        Viatura v = gestao.procurarViaturaPorId(id);
 
-        if (viatura == null) {
+        if (v == null) {
             System.out.println("\nViatura nao encontrada!");
             pausar();
             return;
         }
 
         System.out.println("\nDados atuais:");
-        System.out.println(viatura.toStringDetalhado());
+        System.out.println(v.toStringDetalhado());
         System.out.println("\n(Deixe em branco para manter o valor atual)\n");
 
-//        String marca = lerStringOpcional("Novo modelo [" + viatura.getMarca() + "]: ")
+        // 1. MARCA
+        String marca = lerStringOpcional("Nova Marca [" + v.getMarca() + "]: ");
+        if (!marca.isEmpty()) {
+            if (Validador.validarComprimentoMinimo(marca, 2)) {
+                v.setMarca(marca);
+            } else {
+                System.out.println("Marca invalida (minimo 2 caracteres). Valor mantido.");
+            }
+        }
+
+        // 2. MODELO
+        String modelo = lerStringOpcional("Novo Modelo [" + v.getModelo() + "]: ");
+        if (!modelo.isEmpty()) {
+            if (Validador.validarComprimentoMinimo(modelo, 1)) {
+                v.setModelo(modelo);
+            } else {
+                System.out.println("Modelo invalido. Valor mantido.");
+            }
+        }
+
+        // 3. MATRÍCULA (Com verificação de duplicados e formatação)
+        boolean matriculaValida = false;
+        do {
+            String inputMatricula = lerStringOpcional("Nova Matricula [" + v.getMatricula() + "]: ");
+
+            if (inputMatricula.isEmpty()) {
+                matriculaValida = true; // Mantém a antiga
+            } else {
+                // Valida o formato (aceita aa00aa ou AA-00-AA)
+                if (!Validador.validarMatricula(inputMatricula)) {
+                    System.out.println(Validador.getMensagemErroMatricula());
+                } else {
+                    // Formata para verificar duplicados (transforma em AA-00-AA)
+                    String matriculaFormatada = Validador.formatarMatricula(inputMatricula);
+
+                    Viatura existente = gestao.procurarViaturaPorMatricula(matriculaFormatada);
+
+                    // Se existe E não é a própria viatura que estamos a editar
+                    if (existente != null && existente.getId() != v.getId()) {
+                        System.out.println("Erro: Ja existe uma viatura com esta matricula!");
+                    } else {
+                        v.setMatricula(matriculaFormatada);
+                        matriculaValida = true;
+                    }
+                }
+            }
+        } while (!matriculaValida);
+
+        // 4. ANO DE FABRICO
+        // Como o lerInteiro não aceita Enter vazio, lemos como String e tentamos converter
+        String inputAno = lerStringOpcional("Novo Ano [" + v.getAnoFabrico() + "]: ");
+        if (!inputAno.isEmpty()) {
+            try {
+                int novoAno = Integer.parseInt(inputAno);
+                if (Validador.validarAnoFabrico(novoAno)) {
+                    v.setAnoFabrico(novoAno);
+                } else {
+                    System.out.println(Validador.getMensagemErroAno() + " Valor mantido.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Ano invalido (tem de ser numero). Valor mantido.");
+            }
+        }
+
+        // 5. COR
+        String cor = lerStringOpcional("Nova Cor [" + v.getCor() + "]: ");
+        if (!cor.isEmpty()) {
+            if (Validador.validarComprimentoMinimo(cor, 4)) {
+                v.setCor(cor);
+            } else {
+                System.out.println("Cor deve ter no minimo 4 caracteres. Valor mantido.");
+            }
+        }
+
+        // 6. LUGARES
+        String inputLugares = lerStringOpcional("Novos Lugares [" + v.getLugares() + "]: ");
+        if (!inputLugares.isEmpty()) {
+            try {
+                int novosLugares = Integer.parseInt(inputLugares);
+                if (Validador.validarLugares(novosLugares)) {
+                    v.setLugares(novosLugares);
+                } else {
+                    System.out.println(Validador.getMensagemErroLugares() + " Valor mantido.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Numero de lugares invalido. Valor mantido.");
+            }
+        }
+
+        System.out.println("\nViatura atualizada com sucesso!");
+        pausar();
+    }
+
+    private void removerViatura() {
+        limparEcra();
+        System.out.println("=== REMOVER VIATURA ===\n");
+
+        int id = lerInteiroPositivo("ID da viatura: ");
+
+        // Chama o metodo na gestão que verifica se tem viagens/reservas antes de apagar
+        int resultado = gestao.removerViatura(id);
+
+        switch (resultado) {
+            case 0:
+                System.out.println("\nViatura removida com sucesso!");
+                break;
+            case -1:
+                System.out.println("\nViatura nao encontrada!");
+                break;
+            case -2:
+                System.out.println("\nERRO: Nao e possivel remover! A viatura tem viagens ou reservas associadas.");
+                break;
+            default:
+                System.out.println("\nErro desconhecido.");
+        }
+        pausar();
     }
 
 
@@ -639,12 +754,10 @@ public class Menu {
         }while (!Validador.validarNif(nif) || gestao.procurarClientePorNif(nif) != null);
 
 
-
-
-        // Telemovel (9 digitos, comecar por 9, 2 ou 3)
+        // Telemovel
         String tel;
         do {
-            tel = lerString("Telemovel (9 digitos): ");
+            tel = lerString("Telemovel: ");
             if (!Validador.validarTelefone(tel)){
                 System.out.println(Validador.getMensagemErroTelefone());
             }
@@ -653,14 +766,20 @@ public class Menu {
         // Morada (minimo 5 caracteres)
         String morada = lerStringComValidacao("Morada (minimo 5 caracteres): ",5);
 
-        // Email (verificar se o email tem o @)
+        // Email (verificar formato + unicidade)
         String email;
+        boolean emailExiste;
         do {
+            emailExiste = false;
             email = lerString("Email: ");
-            if (!Validador.validarEmail(email)){
+
+            if (!Validador.validarEmail(email)) {
                 System.out.println(Validador.getMensagemErroEmail());
+            } else if (gestao.procurarClientePorEmail(email) != null) {
+                System.out.println("Erro: Ja existe um cliente com este Email!");
+                emailExiste = true;
             }
-        }while (!Validador.validarEmail(email));
+        } while (!Validador.validarEmail(email) || emailExiste);
 
         Cliente cliente = new Cliente(nome, nif, tel, morada, email);
 
@@ -741,14 +860,29 @@ public class Menu {
             }
         }
 
-        String nif = lerStringOpcional("Novo NIF [" + c.getNif() + "]: ");
-        if (!nif.isEmpty()) {
-            if (Validador.validarNif(nif)) {
-                c.setNif(nif);
+        //Verifica duplicados
+        boolean nifValido = false;
+        do {
+            String inputNif = lerStringOpcional("Novo NIF [" + c.getNif() + "]: ");
+
+            if (inputNif.isEmpty()) {
+                nifValido = true; // Mantém o antigo
             } else {
-                System.out.println(Validador.getMensagemErroNif() + " Valor mantido.");
+                if (!Validador.validarNif(inputNif)) {
+                    System.out.println(Validador.getMensagemErroNif());
+                } else {
+                    // Verificar se já existe noutro cliente
+                    Cliente existente = gestao.procurarClientePorNif(inputNif);
+
+                    if (existente != null && existente.getId() != c.getId()) {
+                        System.out.println("Erro: Este NIF ja pertence a outro cliente!");
+                    } else {
+                        c.setNif(inputNif);
+                        nifValido = true;
+                    }
+                }
             }
-        }
+        } while (!nifValido);
 
         String tel = lerStringOpcional("Novo Telemovel [" + c.getTelemovel() + "]: ");
         if (!tel.isEmpty()) {
@@ -768,14 +902,30 @@ public class Menu {
             }
         }
 
-        String email = lerStringOpcional("Novo Email [" + c.getEmail() + "]: ");
-        if (!email.isEmpty()) {
-            if (Validador.validarEmail(email)) {
-                c.setEmail(email);
+        //VERIFICA DUPLICADOS
+        boolean emailValido = false;
+        do {
+            String inputEmail = lerStringOpcional("Novo Email [" + c.getEmail() + "]: ");
+
+            if (inputEmail.isEmpty()) {
+                emailValido = true; // Mantém o antigo
             } else {
-                System.out.println(Validador.getMensagemErroEmail() + " Valor mantido.");
+                if (!Validador.validarEmail(inputEmail)) {
+                    System.out.println(Validador.getMensagemErroEmail());
+                } else {
+                    // Verificar duplicados
+                    Cliente existente = gestao.procurarClientePorEmail(inputEmail);
+
+                    // Se existe E não é o próprio cliente que estamos a editar
+                    if (existente != null && existente.getId() != c.getId()) {
+                        System.out.println("Erro: Este Email ja pertence a outro cliente!");
+                    } else {
+                        c.setEmail(inputEmail);
+                        emailValido = true;
+                    }
+                }
             }
-        }
+        } while (!emailValido);
 
         System.out.println("\nCliente atualizado com sucesso!");
         pausar();

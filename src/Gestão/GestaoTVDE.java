@@ -417,6 +417,21 @@ public class GestaoTVDE {
     }
 
     /**
+     * Procura um cliente pelo Email.
+     * @param email Email a procurar
+     * @return Cliente encontrado ou null
+     */
+    public Cliente procurarClientePorEmail(String email) {
+        for (int i = 0; i < numClientes; i++) {
+            Cliente c = clientes.get(i);
+            if (c.getEmail().equalsIgnoreCase(email)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Remove um cliente
      * @param id ID do cliente a remover
      * @return 0 se removido, -1 se não foi encontrado, -2 se tem dependencias

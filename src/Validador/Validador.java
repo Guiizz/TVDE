@@ -1,16 +1,12 @@
 package Validador;
 
 public class Validador {
-    // Validar um numero de telefone (9 digitos)
+    // Validar um numero de telefone
     public static boolean validarTelefone (String telefone) {
         if (telefone == null || telefone.isEmpty()) {
             return false;
         }
 
-        //verificar se tem 9 digitos
-        if (telefone.length() != 9){
-            return false;
-        }
         // Verificar se são todos digitos
         for (int i = 0; i < telefone.length(); i++){
             if (!Character.isDigit(telefone.charAt(i))){
@@ -154,18 +150,6 @@ public class Validador {
         }
 
         return texto.trim().length() >= minimo;
-    }
-
-    //Formata um numero de telefone (adiciona espaços)
-
-    public static String formatarTelefone(String telefone) {
-        if (telefone == null) {
-            return "";
-        }
-        if (telefone.length() == 9) {
-            return telefone.substring(0, 3) + " " + telefone.substring(3, 6) + " " + telefone.substring(6);
-        }
-        return telefone;
     }
 
     // Formata matricula (adiciona hifens e mete em maiusculas)
