@@ -5,25 +5,35 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class GestaoTVDE {
-
-    private String nome;
-
+    /** Lista de condutores */
     private ArrayList<Condutor> condutores;
+    /** Lista de viaturas */
     private ArrayList<Viatura> viaturas;
+    /** Lista de clientes */
     private ArrayList<Cliente> clientes;
+    /** Lista de reservas */
     private ArrayList<Reserva> reservas;
+    /** Lista de viagens */
     private ArrayList<Viagem> viagens;
+    /** Contador de condutores */
     private int numCondutores;
+    /** Contador de viaturas */
     private int numViaturas;
+    /** Contador de clientes */
     private int numClientes;
+    /** Contador de reservas */
     private int numReservas;
+    /** Contador de viagens */
     private int numViagens;
+    /** Preço por km em euros */
     private double precoPorKm;
+    /** Taxa base por viagem em euros */
     private double taxaBase;
 
-
+    /**
+     * Construtor da classe GestaoTVDE.
+     */
     public GestaoTVDE () {
-        this.nome = nome;
         this.condutores = new ArrayList<Condutor>();
         this.viaturas = new ArrayList<Viatura>();
         this.clientes = new ArrayList<Cliente>();
@@ -40,52 +50,82 @@ public class GestaoTVDE {
 
     // ==================== GETTERS E SETTERS ====================
 
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
+    /**
+     * Obtem o preço por km
+     * @return preço por km
+     */
     public double getPrecoPorKm() {
         return precoPorKm;
     }
 
+    /**
+     * Define o preço por km.
+     * @param precoPorKm novo preço por km
+     */
     public void setPrecoPorKm(double precoPorKm) {
         this.precoPorKm = precoPorKm;
     }
 
+    /**
+     * Obtem a taxa base.
+     * @return taxa base
+     */
     public double getTaxaBase() {
         return taxaBase;
     }
 
+    /**
+     * Define a taxa base.
+     * @param taxaBase nova taxa base
+     */
     public void setTaxaBase(double taxaBase) {
         this.taxaBase = taxaBase;
     }
 
+    /**
+     * Obtem a lista de condutores.
+     * @return Arraylist de condutores
+     */
     public ArrayList<Condutor> getCondutores() {
         return condutores;
     }
 
+    /**
+     * Obtem a lista de viaturas.
+     * @return Arraylist de viaturas
+     */
     public ArrayList<Viatura> getViaturas() {
         return viaturas;
     }
-
+    /**
+     * Obtem a lista de clientes.
+     * @return Arraylist de clientes
+     */
     public ArrayList<Cliente> getClientes() {
         return clientes;
     }
-
+    /**
+     * Obtem a lista de reservas.
+     * @return Arraylist de reservas
+     */
     public ArrayList<Reserva> getReservas() {
         return reservas;
     }
-
+    /**
+     * Obtem a lista de viagens.
+     * @return Arraylist de viagens
+     */
     public ArrayList<Viagem> getViagens() {
         return viagens;
     }
 
     // ==================== OPERACOES CRUD CONDUTORES ====================
 
+    /**
+     * Adiciona um novo condutor
+     * @param condutor Condutor a adicionar
+     * @return true se for adicionado com sucesso
+     */
     public boolean adicionarCondutor(Condutor condutor) {
         if (condutor == null) {
             return false;
@@ -95,6 +135,11 @@ public class GestaoTVDE {
         return true;
     }
 
+    /**
+     * Procura um condutor pelo ID.
+     * @param id ID do condutor
+     * @return Condutor encontrado ou null
+     */
     public Condutor procurarCondutorPorId(int id) {
         for (int i = 0; i < numCondutores; i++) {
             Condutor c = condutores.get(i);
@@ -105,6 +150,11 @@ public class GestaoTVDE {
         return null;
     }
 
+    /**
+     * Procura o condutor por NIF.
+     * @param nif NIF do condutor
+     * @return Condutor encontrado ou null
+     */
     public Condutor procurarCondutorPorNif(String nif) {
         for (int i = 0; i < numCondutores; i++) {
             Condutor c = condutores.get(i);
@@ -115,6 +165,12 @@ public class GestaoTVDE {
         return null;
     }
 
+    /**
+     * Remove um condutor
+     * Verifica se não tem viagens associadas.
+     * @param id ID do condutor a remover
+     * @return 0 se removido, -1 se não encontrado, -2 se tem dependencias
+     */
     public int removerCondutor(int id) {
         Condutor condutor = procurarCondutorPorId(id);
         if (condutor == null) {
@@ -129,6 +185,11 @@ public class GestaoTVDE {
         return 0;
     }
 
+    /**
+     * Verifica se um condutor tem viagens associadas.
+     * @param idCondutor ID do condutor
+     * @return True se tem viagens
+     */
     public boolean condutorTemViagens(int idCondutor) {
         for (int i = 0; i < numViagens; i++) {
             Viagem v = viagens.get(i);
@@ -139,7 +200,10 @@ public class GestaoTVDE {
         return false;
     }
 
-
+    /**
+     * Obtem o número de condutores.
+     * @return Número de condutores
+     */
     public int getNumeroCondutores() {
         return numCondutores;
     }
@@ -147,7 +211,11 @@ public class GestaoTVDE {
 
     // ==================== OPERACOES CRUD VIATURAS ====================
 
-
+    /**
+     * Adiciona um nova viatura.
+     * @param viatura Viatura a adicionar
+     * @return true se for adicionada com sucesso.
+     */
     public boolean adicionarViatura(Viatura viatura) {
         if (viatura == null) {
             return false;
@@ -161,7 +229,11 @@ public class GestaoTVDE {
         return true;
     }
 
-
+    /**
+     * Procura uma viatura por ID.
+     * @param id ID da viatura
+     * @return Viatura encontrada ou null
+     */
     public Viatura procurarViaturaPorId(int id) {
         for (int i = 0; i < numViaturas; i++) {
             Viatura v = viaturas.get(i);
@@ -172,7 +244,11 @@ public class GestaoTVDE {
         return null;
     }
 
-
+    /**
+     * Procura viatura por matricula.
+     * @param matricula Matricula da viatura
+     * @return Viatura encontrada ou null
+     */
     public Viatura procurarViaturaPorMatricula(String matricula) {
         for (int i = 0; i < numViaturas; i++) {
             Viatura v = viaturas.get(i);
@@ -183,7 +259,12 @@ public class GestaoTVDE {
         return null;
     }
 
-
+    /**
+     * Remove uma viatura.
+     * Verifica se não tem viagens ou reservas associados.
+     * @param id ID da viatura a remover
+     * @return 0 se removida, -1 se não for encontrada, -2 se tem dependencias
+     */
     public int removerViatura(int id) {
         Viatura viatura = procurarViaturaPorId(id);
         if (viatura == null) {
@@ -198,7 +279,11 @@ public class GestaoTVDE {
         return 0;
     }
 
-
+    /**
+     * Verifica se uma viatura tem viagens associadas.
+     * @param idViatura ID da viatura
+     * @return True se tem viagens
+     */
     public boolean viaturaTemViagens(int idViatura) {
         for (int i = 0; i < numViagens; i++) {
             Viagem v = viagens.get(i);
@@ -209,7 +294,11 @@ public class GestaoTVDE {
         return false;
     }
 
-
+    /**
+     * Verifica se uma viatura tem reservas associadas.
+     * @param idViatura ID da viatura
+     * @return True se tem reservas
+     */
     public boolean viaturaTemReservas(int idViatura) {
         for (int i = 0; i < numReservas; i++) {
             Reserva r = reservas.get(i);
@@ -220,7 +309,10 @@ public class GestaoTVDE {
         return false;
     }
 
-
+    /**
+     * Obtem o número de viaturas.
+     * @return número de viaturas
+     */
     public int getNumeroViaturas() {
         return numViaturas;
     }
@@ -229,7 +321,11 @@ public class GestaoTVDE {
 
     // ==================== OPERACOES CRUD CLIENTES ====================
 
-
+    /**
+     * Adiciona um novo cliente.
+     * @param cliente Cliente a adicionar
+     * @return True se adicionado com sucesso
+     */
     public boolean adicionarCliente(Cliente cliente) {
         if (cliente == null) {
             return false;
@@ -239,7 +335,11 @@ public class GestaoTVDE {
         return true;
     }
 
-
+    /**
+     * Procura um cliente por ID.
+     * @param id ID do cliente
+     * @return Cliente encontrado ou null
+     */
     public Cliente procurarClientePorId(int id) {
         for (int i = 0; i < numClientes; i++) {
             Cliente c = clientes.get(i);
@@ -250,7 +350,11 @@ public class GestaoTVDE {
         return null;
     }
 
-
+    /**
+     * Procura um cliente por NIF.
+     * @param nif NIF do cliente
+     * @return Cliente encontrado ou null
+     */
     public Cliente procurarClientePorNif(String nif) {
         for (int i = 0; i < numClientes; i++) {
             Cliente c = clientes.get(i);
@@ -261,7 +365,11 @@ public class GestaoTVDE {
         return null;
     }
 
-
+    /**
+     * Remove um cliente
+     * @param id ID do cliente a remover
+     * @return 0 se removido, -1 se não foi encontrado, -2 se tem dependencias
+     */
     public int removerCliente(int id) {
         Cliente cliente = procurarClientePorId(id);
         if (cliente == null) {
@@ -276,7 +384,11 @@ public class GestaoTVDE {
         return 0;
     }
 
-
+    /**
+     * Verifica se o cliente tem viagens associadas
+     * @param idCliente ID do cliente
+     * @return True se tem viagens
+     */
     public boolean clienteTemViagens(int idCliente) {
         for (int i = 0; i < numViagens; i++) {
             Viagem v = viagens.get(i);
@@ -287,7 +399,11 @@ public class GestaoTVDE {
         return false;
     }
 
-
+    /**
+     * Verifica se o cliente tem reservas associadas.
+     * @param idCliente ID do cliente
+     * @return True se tem reservas ativas
+     */
     public boolean clienteTemReservas(int idCliente) {
         for (int i = 0; i < numReservas; i++) {
             Reserva r = reservas.get(i);
@@ -298,14 +414,22 @@ public class GestaoTVDE {
         return false;
     }
 
-
+    /**
+     * Obtem o número de clientes.
+     * @return número de clientes
+     */
     public int getNumeroClientes() {
         return numClientes;
     }
 
     // ==================== OPERACOES CRUD RESERVAS ====================
 
-
+    /**
+     * Adiciona uma nova reserva.
+     * Verifica se não há sobreposição.
+     * @param reserva Reserva a adicionar
+     * @return True se adicionada com sucesso, False se houver sobreposições
+     */
     public boolean adicionarReserva(Reserva reserva) {
         if (reserva == null) {
             return false;
@@ -319,7 +443,11 @@ public class GestaoTVDE {
         return true;
     }
 
-
+    /**
+     * Procura uma reserva por ID.
+     * @param id ID da reserva
+     * @return Reserva encontrada ou null
+     */
     public Reserva procurarReservaPorId(int id) {
         for (int i = 0; i < numReservas; i++) {
             Reserva r = reservas.get(i);
@@ -330,7 +458,11 @@ public class GestaoTVDE {
         return null;
     }
 
-
+    /**
+     * Remove uma reserva.
+     * @param id ID da reserva a remover
+     * @return True se removida, False se não encontrada
+     */
     public boolean removerReserva(int id) {
         Reserva reserva = procurarReservaPorId(id);
         if (reserva == null) {
@@ -341,7 +473,12 @@ public class GestaoTVDE {
         return true;
     }
 
-
+    /**
+     * Obtem as reservas de um cliente.
+     * @param idCliente ID do cliente
+     * @param resultado Número de reservas
+     * @return Arraylist de reservas do cliente
+     */
     public int getReservasCliente(int idCliente, ArrayList<Reserva> resultado) {
         int numResultados = 0;
         for (int i = 0; i < numReservas; i++) {
@@ -354,7 +491,12 @@ public class GestaoTVDE {
         return numResultados;
     }
 
-
+    /**
+     * Obtem as reservas ativas de um cliente
+     * @param idCliente ID do cliente
+     * @param resultado Número de reservas
+     * @return Arraylist de reservas ativas do cliente
+     */
     public int getReservasAtivasCliente(int idCliente, ArrayList<Reserva> resultado) {
         int numResultados = 0;
         for (int i = 0; i < numReservas; i++) {
@@ -367,6 +509,10 @@ public class GestaoTVDE {
         return numResultados;
     }
 
+    /**
+     * Obtem o número de reservas.
+     * @return número de reservas
+     */
     public int getNumeroReservas() {
         return numReservas;
     }
@@ -375,7 +521,12 @@ public class GestaoTVDE {
 
     // ==================== OPERACOES CRUD VIAGENS ====================
 
-
+    /**
+     * Adiciona uma nova viagem.
+     * Verifica se não há sobreposição
+     * @param viagem Viagem a adicionar
+     * @return True se adicionada com sucesso, False se houver sobreposição
+     */
     public boolean adicionarViagem(Viagem viagem) {
         if (viagem == null) {
             return false;
@@ -390,7 +541,11 @@ public class GestaoTVDE {
         return true;
     }
 
-
+    /**
+     * Procura uma viagem pelo ID.
+     * @param id ID da viagem
+     * @return Viagem encontrada ou null
+     */
     public Viagem procurarViagemPorId(int id) {
         for (int i = 0; i < numViagens; i++) {
             Viagem v = viagens.get(i);
@@ -401,7 +556,11 @@ public class GestaoTVDE {
         return null;
     }
 
-
+    /**
+     * Remove uma Viagem.
+     * @param id ID da viagem a remover
+     * @return True se removida, False se não for encontrada.
+     */
     public boolean removerViagem(int id) {
         Viagem viagem = procurarViagemPorId(id);
         if (viagem == null) {
@@ -412,7 +571,12 @@ public class GestaoTVDE {
         return true;
     }
 
-
+    /**
+     * Obtem as viagens de um cliente.
+     * @param idCliente ID do cliente
+     * @param resultado Número de viagens
+     * @return Arraylist de viagens do cliente
+     */
     public int getViagensCliente(int idCliente, ArrayList<Viagem> resultado) {
         int numResultados = 0;
         for (int i = 0; i < numViagens; i++) {
@@ -425,21 +589,22 @@ public class GestaoTVDE {
         return numResultados;
     }
 
-
+    /**
+     * Obtem as viagens de um cliente num intervalo de datas.
+     * @param idCliente ID do cliente
+     * @param dataInicio Data de inicio
+     * @param dataFim Data de fim
+     * @param resultado Número de viagens
+     * @return Arraylist de viagens do cliente no intervalo.
+     */
     public int getViagensClienteEntreDatas(int idCliente, LocalDateTime dataInicio, LocalDateTime dataFim, ArrayList<Viagem> resultado) {
         int numResultados = 0;
 
         for (int i = 0; i < numViagens; i++) {
             Viagem v = viagens.get(i);
 
-            // Vamos buscar a data da viagem para uma variável para ficar mais legível
-            // Nota: Verifica se no teu Model o método é getDataHoraInicio() ou getDataInicio()
+            // Vamos buscar a data da viagem para uma variável
             LocalDateTime dataViagem = v.getDataHoraInicio();
-
-            // Lógica: (data >= inicio) && (data <= fim)
-            // Em Java LocalDateTime traduz-se para:
-            // (!data.isBefore(inicio)) && (!data.isAfter(fim))
-            // OU usando isAfter/isEqual explicitamente:
 
             boolean dentroDoInicio = dataViagem.isEqual(dataInicio) || dataViagem.isAfter(dataInicio);
             boolean dentroDoFim = dataViagem.isEqual(dataFim) || dataViagem.isBefore(dataFim);
@@ -452,19 +617,22 @@ public class GestaoTVDE {
         return numResultados;
     }
 
-
+    /**
+     * Obtem o número de viagens.
+     * @return número de viagens
+     */
     public int getNumeroViagens() {
         return numViagens;
     }
-// ==================== VERIFICACAO DE SOBREPOSICAO (Refatorado) ====================
+// ==================== VERIFICACAO DE SOBREPOSICAO ====================
 
     /**
-     * Verifica se existe sobreposição para uma VIATURA (usado ao criar Reservas ou Viagens).
+     * Verifica se existe sobreposição para uma VIATURA.
      *
      * @param idViatura ID da viatura a verificar
      * @param inicio Data/hora de início
      * @param fim Data/hora de fim (se for null, assume-se 2 horas - padrão para Reservas)
-     * @param excluirId ID da reserva/viagem a excluir da verificação (usar 0 se for uma criação nova)
+     * @param excluirId ID da reserva/viagem a excluir da verificação
      * @return true se houver conflito
      */
     public boolean existeSobreposicao(int idViatura, LocalDateTime inicio, LocalDateTime fim, int excluirId) {
@@ -499,7 +667,7 @@ public class GestaoTVDE {
     }
 
     /**
-     * Verifica se existe sobreposição para uma VIAGEM (que valida Viatura E Condutor).
+     * Verifica se existe sobreposição para uma VIAGEM
      *
      * @param idViatura ID da viatura
      * @param idCondutor ID do condutor
