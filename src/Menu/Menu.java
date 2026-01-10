@@ -62,6 +62,12 @@ public class Menu {
                 case 2:
                     menuViaturas();
                     break;
+                case 3:
+                    menuClientes();
+                    break;
+                case 5:
+                    menuViagens();
+                    break;
                 case 6:
                     menuRelStats();
                     break;
