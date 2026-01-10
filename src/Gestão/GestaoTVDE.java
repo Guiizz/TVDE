@@ -746,7 +746,7 @@ public class GestaoTVDE {
         // Garantir que não há datas nulas
         LocalDateTime fimEfetivo = (fim == null) ? inicio.plusHours(2) : fim;
 
-        // 1. Verificar se a VIATURA está livre (reutiliza o método acima)
+        // 1. Verificar se a VIATURA está livre (reutiliza o metodo acima)
         if (existeSobreposicao(idViatura, inicio, fimEfetivo, excluirId)) {
             return true;
         }
@@ -765,7 +765,7 @@ public class GestaoTVDE {
     }
 
     /**
-     * Método auxiliar para comparar dois intervalos de tempo.
+     * Metodo auxiliar para comparar dois intervalos de tempo.
      * Lógica: (InicioA < FimB) E (FimA > InicioB) detecta qualquer sobreposição.
      */
     private boolean verificarConflitoTempo(LocalDateTime inicioA, LocalDateTime fimA, LocalDateTime inicioB, LocalDateTime fimB) {
@@ -775,6 +775,237 @@ public class GestaoTVDE {
         return inicioA.isBefore(finalB) && fimA.isAfter(inicioB);
     }
 
+// ==================== ESTATÍSTICAS E RELATÓRIOS ====================
 
+    /**
+     * 1. Obtem a lista de clientes que ja usaram uma determinada viatura (em viagens ou reservas).
+     * @param matricula Matricula da viatura
+     * @return Lista de clientes unicos
+     */
+    public ArrayList<Cliente> getClientesPorViatura(String matricula) {
+        ArrayList<Cliente> resultado = new ArrayList<>();
+        Viatura viatura = procurarViaturaPorMatricula(matricula);
+
+        if (viatura == null) {
+            return resultado; // Retorna lista vazia se viatura nao existir
+        }
+
+        int idViatura = viatura.getId();
+
+        // 1. Verificar nas Reservas
+        for (Reserva r : reservas) {
+            if (r.getIdViatura() == idViatura) {
+                Cliente c = procurarClientePorId(r.getIdCliente());
+                // Adiciona apenas se o cliente existir e AINDA NAO estiver na lista
+                if (c != null && !resultado.contains(c)) {
+                    resultado.add(c);
+                }
+            }
+        }
+
+        // 2. Verificar nas Viagens
+        for (Viagem v : viagens) {
+            if (v.getIdViatura() == idViatura) {
+                Cliente c = procurarClientePorId(v.getIdCliente());
+                if (c != null && !resultado.contains(c)) {
+                    resultado.add(c);
+                }
+            }
+        }
+        return resultado;
+    }
+
+    /**
+     * 2. Calcula o valor total faturado por um condutor num intervalo de datas.
+     * @param idCondutor ID do condutor
+     * @param inicio Data de inicio
+     * @param fim Data de fim
+     * @return Valor total faturado
+     */
+    public double calcularFaturacaoCondutor(int idCondutor, LocalDateTime inicio, LocalDateTime fim) {
+        double totalFaturado = 0.0;
+
+        for (Viagem v : viagens) {
+            // Verifica se a viagem e deste condutor
+            if (v.getIdCondutor() == idCondutor) {
+                LocalDateTime dataViagem = v.getDataHoraInicio();
+
+                // Verifica se a data da viagem esta dentro do intervalo [inicio, fim]
+                // (Data >= Inicio) E (Data <= Fim)
+                boolean depoisDoInicio = dataViagem.isEqual(inicio) || dataViagem.isAfter(inicio);
+                boolean antesDoFim = dataViagem.isEqual(fim) || dataViagem.isBefore(fim);
+
+                if (depoisDoInicio && antesDoFim) {
+                    totalFaturado += v.getCusto();
+                }
+            }
+        }
+        return totalFaturado;
+    }
+
+    /**
+     * 3. Obtem a lista de viagens de um condutor num intervalo de datas.
+     * @param idCondutor ID do condutor
+     * @param inicio Data de inicio
+     * @param fim Data de fim
+     * @return Lista de viagens encontradas
+     */
+    public ArrayList<Viagem> getViagensCondutorEntreDatas(int idCondutor, LocalDateTime inicio, LocalDateTime fim) {
+        ArrayList<Viagem> resultado = new ArrayList<>();
+
+        for (Viagem v : viagens) {
+            // Verifica se a viagem e deste condutor
+            if (v.getIdCondutor() == idCondutor) {
+                LocalDateTime dataViagem = v.getDataHoraInicio();
+
+                // Verifica se esta dentro do intervalo
+                boolean depoisDoInicio = dataViagem.isEqual(inicio) || dataViagem.isAfter(inicio);
+                boolean antesDoFim = dataViagem.isEqual(fim) || dataViagem.isBefore(fim);
+
+                if (depoisDoInicio && antesDoFim) {
+                    resultado.add(v);
+                }
+            }
+        }
+        return resultado;
+    }
+
+    /**
+     * Auxiliar: Calcula os KMs totais de uma viatura num intervalo.
+     */
+    public double getKmsViaturaEntreDatas(int idViatura, LocalDateTime inicio, LocalDateTime fim) {
+        double totalKms = 0.0;
+        for (Viagem v : viagens) {
+            if (v.getIdViatura() == idViatura) {
+                // Verificar datas
+                LocalDateTime data = v.getDataHoraInicio();
+                if ((data.isEqual(inicio) || data.isAfter(inicio)) &&
+                        (data.isEqual(fim) || data.isBefore(fim))) {
+                    totalKms += v.getKms();
+                }
+            }
+        }
+        return totalKms;
+    }
+
+    /**
+     * 4. Encontra a viatura com mais KMs percorridos num intervalo de datas.
+     * @param inicio Data de inicio
+     * @param fim Data de fim
+     * @return A Viatura com mais KMs (ou null se nao houver dados)
+     */
+    public Viatura getViaturaMaisKms(LocalDateTime inicio, LocalDateTime fim) {
+        Viatura viaturaVencedora = null;
+        double maxKms = -1.0; // Começa negativo para garantir que qualquer valor positivo ganha
+
+        for (Viatura v : viaturas) {
+            double kmsAtuais = getKmsViaturaEntreDatas(v.getId(), inicio, fim);
+
+            // Se esta viatura tem mais KMs que o maximo atual, ela passa a ser a vencedora
+            if (kmsAtuais > maxKms) {
+                maxKms = kmsAtuais;
+                viaturaVencedora = v;
+            }
+        }
+
+        // Se o maximo for 0, significa que ninguem andou.
+        if (maxKms == 0) return null;
+
+        return viaturaVencedora;
+    }
+
+    /**
+     * 5. Encontra o destino mais solicitado (em Reservas e Viagens) num intervalo.
+     * @param inicio Data de inicio
+     * @param fim Data de fim
+     * @return O nome do destino mais popular (ou null se nao houver dados)
+     */
+    public String getDestinoMaisSolicitado(LocalDateTime inicio, LocalDateTime fim) {
+        ArrayList<String> nomesDestinos = new ArrayList<>();
+        ArrayList<Integer> contadores = new ArrayList<>();
+
+        // 1. Processar Reservas
+        for (Reserva r : reservas) {
+            // Verificar Datas (Reservas ativas ou passadas contam)
+            LocalDateTime data = r.getDataHoraInicio();
+            if ((data.isEqual(inicio) || data.isAfter(inicio)) &&
+                    (data.isEqual(fim) || data.isBefore(fim))) {
+
+                contabilizarDestino(r.getMoradaDestino(), nomesDestinos, contadores);
+            }
+        }
+
+        // 2. Processar Viagens
+        for (Viagem v : viagens) {
+            LocalDateTime data = v.getDataHoraInicio();
+            if ((data.isEqual(inicio) || data.isAfter(inicio)) &&
+                    (data.isEqual(fim) || data.isBefore(fim))) {
+
+                contabilizarDestino(v.getMoradaDestino(), nomesDestinos, contadores);
+            }
+        }
+
+        // 3. Descobrir o vencedor
+        String vencedor = null;
+        int maxVezes = -1;
+
+        for (int i = 0; i < nomesDestinos.size(); i++) {
+            if (contadores.get(i) > maxVezes) {
+                maxVezes = contadores.get(i);
+                vencedor = nomesDestinos.get(i);
+            }
+        }
+
+        if (vencedor != null) {
+            return vencedor + " (" + maxVezes + " vezes)";
+        }
+        return null;
+    }
+
+    // Metodo auxiliar privado para ajudar na contagem
+    private void contabilizarDestino(String destino, ArrayList<String> nomes, ArrayList<Integer> counts) {
+        if (destino == null || destino.isEmpty()) return;
+
+        // Normalizar (ignorar maiusculas/minusculas)
+        String dest = destino.trim().toUpperCase();
+
+        int index = nomes.indexOf(dest);
+
+        if (index == -1) {
+            // Se ainda nao existe, adiciona com contagem 1
+            nomes.add(dest);
+            counts.add(1);
+        } else {
+            // Se ja existe, incrementa o contador dessa posicao
+            int valorAtual = counts.get(index);
+            counts.set(index, valorAtual + 1);
+        }
+    }
+
+    /**
+     * 6. Obtem a lista de clientes que fizeram viagens com distancia dentro de um intervalo.
+     * @param minKms Distancia minima
+     * @param maxKms Distancia maxima
+     * @return Lista de clientes unicos
+     */
+    public ArrayList<Cliente> getClientesComViagensEntreKms(double minKms, double maxKms) {
+        ArrayList<Cliente> resultado = new ArrayList<>();
+
+        for (Viagem v : viagens) {
+            double kms = v.getKms();
+
+            // Verifica se a distancia da viagem esta no intervalo
+            if (kms >= minKms && kms <= maxKms) {
+                // Vai buscar o cliente pelo ID
+                Cliente c = procurarClientePorId(v.getIdCliente());
+
+                // Se o cliente existe e ainda nao esta na lista, adiciona
+                if (c != null && !resultado.contains(c)) {
+                    resultado.add(c);
+                }
+            }
+        }
+        return resultado;
+    }
 }
 

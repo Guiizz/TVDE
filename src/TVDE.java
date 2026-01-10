@@ -31,9 +31,6 @@ public class TVDE {
     }
 }
 //falta fazer
-//        menus acabar o meunu condutor os detalhes
-//        acabar menu viaturas e detalhes
-//        acabar menu clientes e detalhes
 //        menus reservas e viagens
 //        voltar a meio de açoes
 //        menu relstats

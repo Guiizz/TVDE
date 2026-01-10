@@ -962,11 +962,12 @@ public class Menu {
             System.out.println("╔══════════════════════════════════════════════════════════════╗");
             System.out.println("║             MENU DE RELATÓRIOS E ESTATÍSTICAS                ║");
             System.out.println("╠══════════════════════════════════════════════════════════════╣");
-            System.out.println("║  1. Apresentar a lista de clientes de uma viatura            ║");
-            System.out.println("║  2. Listar todos os condutores                               ║");
-            System.out.println("║  3. Consultar condutor                                       ║");
-            System.out.println("║  4. Alterar condutor                                         ║");
-            System.out.println("║  5. Remover condutor                                         ║");
+            System.out.println("║  1. Clientes que utilizaram uma viatura                      ║");
+            System.out.println("║  2. Faturacao de um condutor (Intervalo de datas)            ║");
+            System.out.println("║  3. Lista de viagens de um condutor (Intervalo de datas)     ║");
+            System.out.println("║  4. Viatura com mais KMs percorridos (Intervalo de datas)    ║");
+            System.out.println("║  5. Destino mais solicitado (Intervalo de datas)             ║");
+            System.out.println("║  6. Clientes com viagens dentro de intervalo de KMs          ║");
             System.out.println("║  0. Voltar                                                   ║");
             System.out.println("╚══════════════════════════════════════════════════════════════╝");
 
@@ -974,19 +975,23 @@ public class Menu {
 
             switch (opcao) {
                 case 1:
-                    adicionarCondutor();
+                    relatorioClientesPorViatura();
                     break;
                 case 2:
-                    listarCondutores();
+                    relatorioFaturacaoCondutor();
                     break;
                 case 3:
-                    consultarCondutor();
+                    relatorioViagensCondutor();
                     break;
                 case 4:
-                    alterarCondutor();
+                    relatorioViaturaMaisKms();
                     break;
                 case 5:
-                    removerCondutor();
+                    relatorioDestinoMaisSolicitado();
+                    break;
+                case 6:
+                    relatorioClientesPorDistancia();
+                    pausar();
                     break;
                 case 0:
                     break;
@@ -995,6 +1000,218 @@ public class Menu {
                     pausar();
             }
         } while (opcao != 0);
+    }
+
+    // --- RELATÓRIO 1 ---
+    private void relatorioClientesPorViatura() {
+        limparEcra();
+        System.out.println("=== CLIENTES POR VIATURA ===\n");
+
+        String matricula = lerString("Indique a matricula da viatura: ");
+        // Formatar para garantir que bate certo (ex: aa-00-aa -> AA-00-AA)
+        matricula = Validador.formatarMatricula(matricula);
+
+        if (gestao.procurarViaturaPorMatricula(matricula) == null) {
+            System.out.println("Erro: Viatura nao encontrada.");
+            pausar();
+            return;
+        }
+
+        ArrayList<Cliente> lista = gestao.getClientesPorViatura(matricula);
+
+        if (lista.isEmpty()) {
+            System.out.println("\nEsta viatura ainda nao foi utilizada por nenhum cliente.");
+        } else {
+            System.out.println("\nClientes que utilizaram a viatura " + matricula + ":");
+            System.out.println("--------------------------------------------------");
+            for (Cliente c : lista) {
+                System.out.println("- " + c.getNome() + " (NIF: " + c.getNif() + ")");
+            }
+            System.out.println("--------------------------------------------------");
+            System.out.println("Total: " + lista.size() + " cliente(s).");
+        }
+        pausar();
+    }
+
+    // --- RELATÓRIO 2 ---
+    private void relatorioFaturacaoCondutor() {
+        limparEcra();
+        System.out.println("=== FATURACAO DE CONDUTOR ===\n");
+
+        int id = lerInteiroPositivo("ID do Condutor: ");
+        Condutor condutor = gestao.procurarCondutorPorId(id);
+
+        if (condutor == null) {
+            System.out.println("Erro: Condutor nao encontrado.");
+            pausar();
+            return;
+        }
+
+        System.out.println("\nDefina o intervalo de tempo:");
+        // Usa o teu metodo auxiliar lerDataHora
+        LocalDateTime inicio = lerDataHora("Data de Inicio ");
+        LocalDateTime fim = lerDataHora("Data de Fim ");
+
+        if (inicio.isAfter(fim)) {
+            System.out.println("\nErro: A data de inicio nao pode ser superior a data de fim.");
+            pausar();
+            return;
+        }
+
+        double total = gestao.calcularFaturacaoCondutor(id, inicio, fim);
+
+        System.out.println("\nResultados para o condutor: " + condutor.getNome());
+        System.out.println("Periodo: " + inicio.format(data) + " ate " + fim.format(data));
+        System.out.println("--------------------------------------------------");
+        System.out.printf("Total Faturado: %.2f €\n", total); // %.2f formata para 2 casas decimais
+        System.out.println("--------------------------------------------------");
+
+        pausar();
+    }
+
+    // --- RELATÓRIO 3 ---
+    private void relatorioViagensCondutor() {
+        limparEcra();
+        System.out.println("=== VIAGENS DE CONDUTOR (POR DATA) ===\n");
+
+        int id = lerInteiroPositivo("ID do Condutor: ");
+        Condutor condutor = gestao.procurarCondutorPorId(id);
+
+        if (condutor == null) {
+            System.out.println("Erro: Condutor nao encontrado.");
+            pausar();
+            return;
+        }
+
+        System.out.println("\nDefina o intervalo de tempo:");
+        LocalDateTime inicio = lerDataHora("Data de Inicio ");
+        LocalDateTime fim = lerDataHora("Data de Fim ");
+
+        if (inicio.isAfter(fim)) {
+            System.out.println("\nErro: A data de inicio nao pode ser superior a data de fim.");
+            pausar();
+            return;
+        }
+
+        ArrayList<Viagem> lista = gestao.getViagensCondutorEntreDatas(id, inicio, fim);
+
+        System.out.println("\nViagens do condutor " + condutor.getNome() + ":");
+        System.out.println("Periodo: " + inicio.format(data) + " ate " + fim.format(data));
+        System.out.println("----------------------------------------------------------------------------------");
+
+        if (lista.isEmpty()) {
+            System.out.println("Nenhuma viagem registada neste periodo.");
+        } else {
+            // Cabeçalho simples da tabela
+            System.out.printf("%-5s | %-16s | %-15s | %-15s | %-6s\n", "ID", "Data", "Origem", "Destino", "Preco");
+            System.out.println("----------------------------------------------------------------------------------");
+
+            for (Viagem v : lista) {
+                System.out.printf("%-5d | %-16s | %-15s | %-15s | %-6.2f\n",
+                        v.getId(),
+                        v.getDataHoraInicio().format(data),
+                        v.getMoradaOrigem(),
+                        v.getMoradaDestino(),
+                        v.getCusto());
+            }
+        }
+        System.out.println("----------------------------------------------------------------------------------");
+        System.out.println("Total de viagens: " + lista.size());
+
+        pausar();
+    }
+
+    // --- RELATÓRIO 4 ---
+    private void relatorioViaturaMaisKms() {
+        limparEcra();
+        System.out.println("=== VIATURA COM MAIS KMS ===\n");
+
+        System.out.println("Defina o intervalo de tempo para analise:");
+        LocalDateTime inicio = lerDataHora("Data de Inicio ");
+        LocalDateTime fim = lerDataHora("Data de Fim ");
+
+        if (inicio.isAfter(fim)) {
+            System.out.println("\nErro: A data de inicio nao pode ser superior a data de fim.");
+            pausar();
+            return;
+        }
+
+        // 1. Obter a viatura vencedora
+        Viatura vencedora = gestao.getViaturaMaisKms(inicio, fim);
+
+        if (vencedora == null) {
+            System.out.println("\nNao ha registo de KMs percorridos neste intervalo de datas.");
+        } else {
+            // 2. Calcular os KMs especificos dela para mostrar (reutilizamos o metodo auxiliar)
+            double totalKms = gestao.getKmsViaturaEntreDatas(vencedora.getId(), inicio, fim);
+
+            System.out.println("\n--- Resultado ---");
+            System.out.println("Viatura: " + vencedora.getMarca() + " " + vencedora.getModelo());
+            System.out.println("Matricula: " + vencedora.getMatricula());
+            System.out.printf("Total Percorrido: %.2f Kms\n", totalKms);
+            System.out.println("-----------------");
+        }
+        pausar();
+    }
+
+    // --- RELATÓRIO 5 ---
+    private void relatorioDestinoMaisSolicitado() {
+        limparEcra();
+        System.out.println("=== DESTINO MAIS SOLICITADO ===\n");
+
+        System.out.println("Defina o intervalo de tempo:");
+        LocalDateTime inicio = lerDataHora("Data de Inicio ");
+        LocalDateTime fim = lerDataHora("Data de Fim ");
+
+        if (inicio.isAfter(fim)) {
+            System.out.println("\nErro: A data de inicio nao pode ser superior a data de fim.");
+            pausar();
+            return;
+        }
+
+        String resultado = gestao.getDestinoMaisSolicitado(inicio, fim);
+
+        System.out.println("\n--------------------------------------------------");
+        if (resultado == null) {
+            System.out.println("Nao foram encontrados registos neste periodo.");
+        } else {
+            System.out.println("O destino mais popular foi:");
+            System.out.println("-> " + resultado);
+        }
+        System.out.println("--------------------------------------------------");
+        pausar();
+    }
+
+    // --- RELATÓRIO 6 ---
+    private void relatorioClientesPorDistancia() {
+        limparEcra();
+        System.out.println("=== CLIENTES POR DISTANCIA DE VIAGEM ===\n");
+
+        double min = lerDoublePositivo("Distancia Minima (Km): ");
+        double max = lerDoublePositivo("Distancia Maxima (Km): ");
+
+        if (min > max) {
+            System.out.println("\nErro: O minimo nao pode ser maior que o maximo.");
+            pausar();
+            return;
+        }
+
+        ArrayList<Cliente> lista = gestao.getClientesComViagensEntreKms(min, max);
+
+        System.out.println("\nClientes com viagens entre " + min + " e " + max + " Kms:");
+        System.out.println("--------------------------------------------------");
+
+        if (lista.isEmpty()) {
+            System.out.println("Nenhum cliente encontrado com viagens neste intervalo.");
+        } else {
+            for (Cliente c : lista) {
+                System.out.println("- " + c.getNome() + " (NIF: " + c.getNif() + ")");
+            }
+            System.out.println("--------------------------------------------------");
+            System.out.println("Total: " + lista.size() + " cliente(s).");
+        }
+
+        pausar();
     }
 
 
