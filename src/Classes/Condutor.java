@@ -46,7 +46,7 @@ public class Condutor {
     }
 
     /**
-     * Construtor com ID especifico
+     * Construtor com ID especifico (usado para leitura de ficheiros).
      *
      * @param id Identificador do condutor
      * @param nome Nome do condutor
