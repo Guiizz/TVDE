@@ -896,6 +896,113 @@ public class Menu {
         }
         pausar();
     }
+    /**
+     * Alterar dados de uma viagem.
+     */
+    private void alterarViagem() {
+        limparEcra();
+        System.out.println("=== CONSULTAR VIAGEM ===\n");
+
+        int id = lerInteiroPositivo("ID da viagem: ");
+        Viagem v = gestao.procurarViagemPorId(id);
+
+        if (v == null) {
+            System.out.println("\nErro: Viagem não encontrada!");
+            pausar();
+            return;
+        }
+
+        System.out.println("\nDados atuais:");
+        System.out.println(v.toStringDetalhado());
+        System.out.println("\n(Deixe em branco para manter o valor atual)\n");
+
+        //Alterar Data/hora inicio
+        System.out.println("Nova Data inicio [" + v.getDataHoraInicio().format(data) + "]: ");
+        String inicio = scanner.nextLine().trim();
+
+        LocalDateTime novoInicio = v.getDataHoraInicio();
+        if (!inicio.isEmpty()) {
+            try {
+                novoInicio = LocalDateTime.parse(inicio, data);
+            } catch (Exception e) {
+                System.out.println("\nFormato inválido! A data de inicio antiga foi mantida.");
+            }
+        }
+        //Alterar Data/hora fim
+        System.out.println("Nova Data Fim [" + v.getDataHoraFim().format(data) + "]: ");
+        String fim = scanner.nextLine().trim();
+
+        LocalDateTime novoFim = v.getDataHoraFim();
+        if (!fim.isEmpty()) {
+            try {
+                LocalDateTime tempFim = LocalDateTime.parse(fim, data);
+                if (tempFim.isAfter(novoInicio)) {
+                    novoFim = tempFim;
+                } else {
+                    System.out.println("\nErro: A data de fim tem que ser posterior ao inicio! Valor antigo mantigo.");
+                }
+            } catch (Exception e) {
+                System.out.println("\nFormato invalido! A data de fim antiga foi mantida");
+            }
+        } else {
+            //Caso o utilizador mude o inicio mas não o fim
+            if (novoFim.isBefore(novoInicio)) {
+                System.out.println("\nAviso: A nova data de inicio era posterior ao fim antigo");
+                novoFim = novoInicio.plusMinutes(30);//ajuste automático de segurança;
+                System.out.println(" -> Data de fim ajustada automaticamente para: " + novoFim.format(data));
+            }
+        }
+        //aplicar datas
+        v.setDataHoraInicio(novoInicio);
+        v.setDataHoraFim(novoFim);
+
+        //alterar origem e destino
+        System.out.println("Nova Origem [" + v.getMoradaOrigem() + "]: ");
+        String origem = scanner.nextLine().trim();
+        if (!origem.isEmpty()) {
+            v.setMoradaOrigem(origem);
+        }
+
+        System.out.println("Nova Destino [" + v.getMoradaDestino() + "]: ");
+        String destino = scanner.nextLine().trim();
+        if (!destino.isEmpty()) {
+            v.setMoradaDestino(destino);
+        }
+
+        //Alterar kms
+        System.out.println("Novos kms [" + v.getKms() + "]: ");
+        String kms = scanner.nextLine().trim();
+        if (!kms.isEmpty()) {
+            try {
+                double k = Double.parseDouble(kms);
+                if (k > 0) {
+                    v.setKms(k);
+                } else {
+                    System.out.println("\nKms devem ser positivos. Valor mantido.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("\nNúmero inválido. valor mantido.");
+            }
+        }
+
+        //Alterar o custo
+        System.out.println("Novo Custo [" + v.getCusto() + "]: ");
+        String custo = scanner.nextLine().trim();
+        if (!custo.isEmpty()) {
+            try {
+                double c = Double.parseDouble(custo);
+                if (c > 0) {
+                    v.setCusto(c);
+                } else {
+                    System.out.println("\nCusto deve ser positivo. Valor mantido.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("\nNúmero inválio. Valor mantido.");
+            }
+        }
+        System.out.println("\nViagem atualizada com sucesso!");
+        pausar();
+    }
 
 
 
