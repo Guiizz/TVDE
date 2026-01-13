@@ -1007,5 +1007,55 @@ public class GestaoTVDE {
         }
         return resultado;
     }
+
+    /**
+
+     Converte uma reserva numa viagem.
+     @param idReserva ID da reserva
+     @param idCondutor ID do condutor
+     @param dataHoraFim Data/hora de fim
+     @param kmsReais Kms reais percorridos
+     @return Viagem criada ou null se erro*/
+    public Viagem converterReservaEmViagem(int idReserva, int idCondutor, LocalDateTime dataHoraFim, double kmsReais) {
+        Reserva reserva = procurarReservaPorId(idReserva);
+        if (reserva == null || !reserva.isAtiva()) {
+            return null;}
+        Condutor condutor = procurarCondutorPorId(idCondutor);
+        if (condutor == null) {
+            return null;}
+
+        // Calcular custo
+        double custo = calcularCustoViagem(kmsReais);
+
+        // Criar viagem
+        Viagem viagem = new Viagem(
+                idCondutor,
+                reserva.getIdCliente(),
+                reserva.getIdViatura(),
+                reserva.getDataHoraInicio(),
+                dataHoraFim,
+                reserva.getMoradaOrigem(),
+                reserva.getMoradaDestino(),
+                kmsReais,
+                custo
+        );
+
+        // Desativar reserva
+        reserva.setAtiva(false);
+
+        // Adicionar viagem
+        viagens.add(viagem);
+        numViagens++;
+
+        return viagem;
+    }
+    /**
+     * Calcula o custo de uma viagem.
+     * @param kms Distancia em km
+     * @return Custo em euros
+     */
+    public double calcularCustoViagem(double kms) {
+        return taxaBase + (kms * precoPorKm);
+    }
 }
 

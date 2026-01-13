@@ -65,6 +65,9 @@ public class Menu {
                 case 3:
                     menuClientes();
                     break;
+                case 4:
+                    menuReservas();
+                    break;
                 case 5:
                     menuViagens();
                     break;
@@ -957,6 +960,410 @@ public class Menu {
                 System.out.println("\nNao e possivel remover! O condutor tem viagens associadas.");
                 break;
         }
+        pausar();
+    }
+
+    private void menuReservas() {
+        int opcao;
+        do {
+            limparEcra();
+            System.out.println("╔══════════════════════════════════════════════════════════════╗");
+            System.out.println("║                   GESTAO DE RESERVAS                         ║");
+            System.out.println("╠══════════════════════════════════════════════════════════════╣");
+            System.out.println("║  1. Criar nova reserva                                       ║");
+            System.out.println("║  2. Listar todos as reservas                                 ║");
+            System.out.println("║  3. Consultar reservas                                       ║");
+            System.out.println("║  4. Alterar reserva                                          ║");
+            System.out.println("║  5. Cancelar reserva                                         ║");
+            System.out.println("║  6. Remover reserva                                          ║");
+            System.out.println("║  7. Converter reserva em viagem                              ║");
+            System.out.println("║  0. Voltar                                                   ║");
+            System.out.println("╚══════════════════════════════════════════════════════════════╝");
+
+            opcao = lerInteiro("Opcao: ");
+
+            switch (opcao) {
+                case 1:
+                    criarReserva();
+                    break;
+                case 2:
+                    listarReservas();
+                    break;
+                case 3:
+                    consultarReserva();
+                    break;
+                case 4:
+                    alterarReserva();
+                    break;
+                case 5:
+                    cancelarReserva();
+                    break;
+                case 6:
+                    removerReserva();
+                    break;
+                case 7:
+                    converterReservaEmViagem();
+                    break;
+                case 0:
+                    break;
+                default:
+                    System.out.println("\nOpcao invalida!");
+                    pausar();
+            }
+        } while (opcao != 0);
+    }
+
+    private void criarReserva() {
+        limparEcra();
+        System.out.println("=== CRIAR RESERVA ===\n");
+
+        //Listar clientes
+        if (gestao.getNumeroClientes() == 0) {
+            System.out.println("Não existem clientes resgistados!");
+            pausar();
+            return;
+        }
+
+        System.out.println("Clientes Disponiveis:");
+        ArrayList<Cliente> clientes = gestao.getClientes();
+        int numClientes = gestao.getNumeroClientes();
+        for (int i = 0; i < numClientes; i++) {
+            System.out.println(clientes.get(i).toString());
+        }
+
+        int idCliente = lerInteiroPositivo("\nID do Cliente: ");
+        Cliente cliente = gestao.procurarClientePorId(idCliente);
+        if (cliente == null) {
+            System.out.println("\nCliente nao encontrado!");
+            pausar();
+            return;
+        }
+
+        //Listar viaturas
+        int idViatura = 0;
+        if (gestao.getNumeroViaturas() > 0) {
+            System.out.println("\nViaturas Disponiveis:");
+            ArrayList<Viatura> viaturas = gestao.getViaturas();
+            int numViaturas = gestao.getNumeroViaturas();
+            for (int i = 0; i < numViaturas; i++) {
+                System.out.println(viaturas.get(i).toString());
+            }
+
+            idViatura = lerInteiroPositivo("\nID da Viatura: ");
+            Viatura viatura = gestao.procurarViaturaPorId(idViatura);
+            if (viatura == null) {
+                System.out.println("\nViatura nao encontrada!");
+                pausar();
+                return;
+            }
+        } else {
+            System.out.println("\nNao existem viaturas registadas!");
+            pausar();
+            return;
+        }
+
+        System.out.println("\nData e hora da reserva:");
+        LocalDateTime dataHora = lerDataHora("Data e hora da reserva");
+        if (dataHora == null) {
+            System.out.println("\nData/hora invalida!");
+            pausar();
+            return;
+        }
+
+        //Morada de origem
+        String origem = lerStringComValidacao("Morada de Origem (minimo 5 caracteres): ",5);
+
+        //Morada de destino
+        String destino = lerStringComValidacao("Morada de Destino (minimo 5 caracteres): ",5);
+
+        //Kms
+        double kms;
+        do {
+            kms = lerDoublePositivo("Distancia estimada (km): ");
+            if (!Validador.validarKms(kms)) {
+                System.out.println(Validador.getMensagemErroKms());
+            }
+        } while (!Validador.validarKms(kms));
+
+        Reserva reserva = new Reserva(idCliente, idViatura, dataHora, origem, destino, kms);
+
+        if (gestao.adicionarReserva(reserva)) {
+            System.out.println("\nReserva criada com sucesso! (ID: " + reserva.getId() + ")");
+        } else {
+            System.out.println("\nErro ao criar reserva!");
+        }
+        pausar();
+    }
+
+    private void listarReservas (){
+        limparEcra();
+        System.out.println("=== LISTA DE RESERVAS ===\n");
+
+        ArrayList<Reserva> reservas = gestao.getReservas();
+        int numReservas = gestao.getNumeroReservas();
+
+        if (numReservas == 0) {
+            System.out.println("Nenhuma reserva registado.");
+        } else {
+            for (int i = 0; i < numReservas; i++) {
+                System.out.println(reservas.get(i).toString());
+            }
+            System.out.println("\nTotal: " + numReservas + " reserva(s)");
+        }
+        pausar();
+    }
+
+    private void consultarReserva() {
+        limparEcra();
+        System.out.println("=== CONSULTAR RESERVA ===\n");
+
+        int id = lerInteiroPositivo("ID da reserva: ");
+        Reserva reserva = gestao.procurarReservaPorId(id);
+
+        if (reserva != null) {
+            System.out.println("\n" + reserva.toStringDetalhado());
+
+            //Mostrar nome do cliente
+            Cliente cliente = gestao.procurarClientePorId(reserva.getIdCliente());
+            if (cliente != null) {
+                System.out.println("Cliente: " + cliente.getNome());
+            }
+
+            //Mostrar viatura
+            if (reserva.getIdViatura() > 0) {
+                Viatura viatura = gestao.procurarViaturaPorId(reserva.getIdViatura());
+                if (viatura != null) {
+                    System.out.println("Viatura: " + viatura.getMarca() + " " + viatura.getModelo() + " (" + viatura.getMatricula() + ")");
+                }
+            }
+        } else {
+            System.out.println("\nReserva nao encontrada!");
+        }
+        pausar();
+    }
+
+    private void alterarReserva() {
+        limparEcra();
+        System.out.println("=== RESERVAS DE UM CLIENTE ===\n");
+
+        int idCliente = lerInteiroPositivo("ID do cliente: ");
+        Cliente cliente = gestao.procurarClientePorId(idCliente);
+
+        if (cliente == null) {
+            System.out.println("\nCliente nao encontrado!");
+            pausar();
+            return;
+        }
+
+        System.out.println("\nCliente: " + cliente.getNome());
+        System.out.println("\nReservas:");
+
+        ArrayList<Reserva> reservas = new ArrayList<Reserva>();
+        int numReservas = gestao.getReservasCliente(idCliente, reservas);
+
+        if (numReservas == 0) {
+            System.out.println("Nenhuma reserva encontrada para este cliente.");
+            pausar();
+            return;
+        }
+
+        for (int i = 0; i < numReservas; i++) {
+            Reserva reserva = reservas.get(i);
+            System.out.println((i + 1) + ". " + reserva.toString());
+            System.out.println("   Origem: " + reserva.getMoradaOrigem());
+            System.out.println("   Destino: " + reserva.getMoradaDestino());
+        }
+
+        System.out.println("\n0. Voltar");
+        int opcao = lerInteiro("\nEscolha uma reserva para alterar (0 para voltar): ");
+
+        if (opcao > 0 && opcao <= numReservas) {
+            alterarReservaEspecifica(reservas.get(opcao - 1));
+        }
+    }
+
+    private void alterarReservaEspecifica(Reserva reserva) {
+        limparEcra();
+        System.out.println("=== ALTERAR RESERVA ===\n");
+        System.out.println(reserva.toStringDetalhado());
+        System.out.println("\n(Deixe em branco para manter o valor atual)\n");
+
+        String origem = lerStringOpcional("Nova Morada de Origem [" + reserva.getMoradaOrigem() + "]: ");
+        if (!origem.isEmpty()) {
+            if (Validador.validarComprimentoMinimo(origem, 5)) {
+                reserva.setMoradaOrigem(origem);
+            } else {
+                System.out.println("Morada de origem invalida (minimo 5 caracteres). Valor mantido.");
+            }
+        }
+
+        String destino = lerStringOpcional("Nova Morada de Destino [" + reserva.getMoradaDestino() + "]: ");
+        if (!destino.isEmpty()) {
+            if (Validador.validarComprimentoMinimo(destino, 5)) {
+                reserva.setMoradaDestino(destino);
+            } else {
+                System.out.println("Morada de destino invalida (minimo 5 caracteres). Valor mantido.");
+            }
+        }
+
+        String kmsStr = lerStringOpcional("Nova Distancia Estimada (km) [" + reserva.getKms() + "]: ");
+        if (!kmsStr.isEmpty()) {
+            try {
+                double kms = Double.parseDouble(kmsStr);
+                if (Validador.validarKms(kms)) {
+                    reserva.setKms(kms);
+                } else {
+                    System.out.println(Validador.getMensagemErroKms() + " Valor mantido.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Distancia invalida. Valor mantido.");
+            }
+        }
+
+        System.out.println("\nReserva atualizada com sucesso!");
+        pausar();
+    }
+
+    private void cancelarReserva() {
+        limparEcra();
+        System.out.println("=== CANCELAR RESERVA ===\n");
+
+        int id = lerInteiroPositivo("ID da reserva: ");
+        Reserva reserva = gestao.procurarReservaPorId(id);
+
+        if (reserva == null) {
+            System.out.println("\nReserva nao encontrada!");
+        } else if (!reserva.isAtiva()){
+            System.out.println("\nA reserva ja se encontra cancelada!");
+        } else {
+            System.out.println("\nReserva cancelada com sucesso!");
+        }
+        pausar();
+    }
+
+    private void removerReserva() {
+        limparEcra();
+        System.out.println("=== REMOVER RESERVA ===\n");
+
+        int id = lerInteiroPositivo("ID da reserva: ");
+
+        if (gestao.removerReserva(id)) {
+            System.out.println("\nReserva removida com sucesso!");
+        } else {
+            System.out.println("\nReserva nao encontrada!");
+        }
+
+        pausar();
+    }
+
+    private void converterReservaEmViagem() {
+        limparEcra();
+        System.out.println("=== CONVERTER RESERVA EM VIAGEM ===\n");
+
+        //Listar reservas ativas
+        ArrayList<Reserva> reservas = gestao.getReservas();
+        int numReservas = gestao.getNumeroReservas();
+        ArrayList<Reserva> reservasAtivas = new ArrayList<Reserva>();
+        int numReservasAtivas = 0;
+
+        for (int i = 0; i < numReservas; i++) {
+            Reserva reserva = reservas.get(i);
+            if (reserva.isAtiva()) {
+                reservasAtivas.add(reserva);
+                numReservasAtivas++;
+            }
+        }
+
+        if (numReservasAtivas == 0) {
+            System.out.println("Nao existem reservas ativas.");
+            pausar();
+            return;
+        }
+
+        System.out.println("Reservas Ativas:");
+        for (int i = 0; i < numReservasAtivas; i++) {
+            Reserva reserva = reservasAtivas.get(i);
+            Cliente cliente = gestao.procurarClientePorId(reserva.getIdCliente());
+            String nomeCliente = (cliente != null) ? cliente.getNome() : "Desconhecido";
+            System.out.println(reserva.toString() + " | Cliente: " + nomeCliente);
+        }
+
+        int idReserva = lerInteiroPositivo("\nID da reserva: ");
+        Reserva reserva = gestao.procurarReservaPorId(idReserva);
+
+        if (reserva == null || !reserva.isAtiva()) {
+            System.out.println("\nReserva nao encontrada ou ja foi convertida/cancelada!");
+            pausar();
+            return;
+        }
+
+        //Verifica se a reserva tem viatura
+        if (reserva.getIdViatura() == 0) {
+            System.out.println("\nA reserva nao tem viatura associada. Selecione uma:");
+            ArrayList<Viatura> viaturas = gestao.getViaturas();
+            int numViaturas = gestao.getNumeroViaturas();
+            for (int i = 0; i < numViaturas; i++) {
+                System.out.println(viaturas.get(i).toString());
+            }
+            int idViatura = lerInteiroPositivo("ID da viatura: ");
+            if (gestao.procurarViaturaPorId(idViatura) == null) {
+                System.out.println("\nViatura nao encontrada!");
+                pausar();
+                return;
+            }
+            reserva.setIdViatura(idViatura);
+        }
+
+        // Selecionar condutor
+        if (gestao.getNumeroCondutores() == 0) {
+            System.out.println("\nNao existem condutores registados!");
+            pausar();
+            return;
+        }
+
+        System.out.println("\nCondutores disponiveis:");
+        ArrayList<Condutor> condutores = gestao.getCondutores();
+        int numCondutores = gestao.getNumeroCondutores();
+        for (int i = 0; i < numCondutores; i++) {
+            System.out.println(condutores.get(i).toString());
+        }
+
+        int idCondutor = lerInteiroPositivo("\nID do condutor: ");
+        if (gestao.procurarCondutorPorId(idCondutor) == null) {
+            System.out.println("\nCondutor nao encontrado!");
+            pausar();
+            return;
+        }
+
+        System.out.println("\nData e hora de fim da viagem:");
+        LocalDateTime dataFim = lerDataHora("Data e hora da reserva");
+        if (dataFim == null) {
+            System.out.println("\nData/hora invalida!");
+            pausar();
+            return;
+        }
+
+        // Validar que data fim e posterior a data inicio
+        // Falta implementar esta validação na classe de leitura de data/hora
+
+        double kmsReais;
+        do {
+            kmsReais = lerDoublePositivo("Kms reais percorridos: ");
+            if (!Validador.validarKms(kmsReais)) {
+                System.out.println(Validador.getMensagemErroKms());
+            }
+        } while (!Validador.validarKms(kmsReais));
+
+        Viagem viagem = gestao.converterReservaEmViagem(idReserva, idCondutor, dataFim, kmsReais);
+
+        if (viagem != null) {
+            System.out.println("\nViagem criada com sucesso!");
+            System.out.println("ID: " + viagem.getId());
+            System.out.println("Custo: " + String.format("%.2f", viagem.getCusto()) + " EUR");
+        } else {
+            System.out.println("\nErro ao converter reserva!");
+        }
+
         pausar();
     }
 
