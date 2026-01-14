@@ -105,6 +105,63 @@ public class GestorFicheiros {
         }
     }
 
+    /**
+     * Lista os nomes das empresas (pastas) existentes na diretoria base.
+     * @return Lista de nomes de empresas encontradas.
+     */
+    public ArrayList<String> listarEmpresasExistentes() {
+        ArrayList<String> empresas = new ArrayList<>();
+        File pastaBase = new File(diretoriaBase);
+
+        if (pastaBase.exists() && pastaBase.isDirectory()) {
+            File[] ficheiros = pastaBase.listFiles();
+            if (ficheiros != null) {
+                for (File f : ficheiros) {
+                    // Se for uma diretoria, assumimos que é uma empresa
+                    if (f.isDirectory()) {
+                        empresas.add(f.getName());
+                    }
+                }
+            }
+        }
+        return empresas;
+    }
+    /**
+     * Remove a pasta de uma empresa e o seu conteúdo.
+     * @param nomeEmpresa Nome da empresa a remover
+     * @return true se removido com sucesso, false caso contrário
+     */
+    public boolean removerEmpresa(String nomeEmpresa) {
+        // Proteção simples
+        if (nomeEmpresa == null || nomeEmpresa.trim().isEmpty()) return false;
+
+        File pastaEmpresa = new File(diretoriaBase, limparParaEmpresa(nomeEmpresa));
+
+        // Chama a função auxiliar que apaga tudo lá dentro
+        return apagarDiretoriaRecursivamente(pastaEmpresa);
+    }
+
+    /**
+     * Metodo auxiliar para apagar pastas com conteúdo.
+     */
+    private boolean apagarDiretoriaRecursivamente(File pasta) {
+        if (!pasta.exists()) return false;
+
+        // Se for diretoria, listar e apagar o conteúdo primeiro
+        File[] ficheiros = pasta.listFiles();
+        if (ficheiros != null) {
+            for (File f : ficheiros) {
+                if (f.isDirectory()) {
+                    apagarDiretoriaRecursivamente(f);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        // Finalmente, apaga a pasta vazia
+        return pasta.delete();
+    }
+
     /** Guarda condutores (1 linha por condutor). */
     private void escreverCondutores(File ficheiro, ArrayList<Condutor> lista) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(ficheiro))) {

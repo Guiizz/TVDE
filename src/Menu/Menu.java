@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.SortedMap;
 
 public class Menu {
     private GestaoTVDE gestao;
@@ -17,31 +18,158 @@ public class Menu {
     private GestorFicheiros gestorFicheiros;
 
     public Menu() {
-        this.gestao = new GestaoTVDE();
+
         this.scanner = new Scanner(System.in);
         this.data = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         this.gestorFicheiros = new GestorFicheiros();
-        try {
-            System.out.println("A carregar dados...");
-            // Substitui a gestão vazia pela que vem do ficheiro
-            this.gestao = this.gestorFicheiros.lerTudo("empresa");
-            System.out.println("Dados carregados com sucesso!");
-        } catch (Exception e) {
-            // Se der erro (ex: 1ª vez a correr), não faz mal. Segue com a lista vazia.
-            System.out.println("Iniciado com base de dados vazia (ou ficheiros não encontrados).");
-        }
-    }
-    public void iniciar(){
-        menuPrincipal();
+        this.gestao = null;
     }
 
+    public void iniciar(){
+        menuInicial();
+    }
+
+    private void menuInicial() {
+        int opcao;
+        do {
+            pausar();
+            limparEcra();
+            System.out.println("╔══════════════════════════════════════════════════════════════╗");
+            System.out.println("║                 SELEÇÃO DA EMPRESA TVDE                      ║");
+            System.out.println("╠══════════════════════════════════════════════════════════════╣");
+            System.out.println("║  1. Selecionar Empresa Existente                             ║");
+            System.out.println("║  2. Criar Nova Empresa                                       ║");
+            System.out.println("║  3. Remover Empresa                                          ║");
+            System.out.println("║  0. Sair                                                     ║");
+            System.out.println("╚══════════════════════════════════════════════════════════════╝");
+
+            opcao = lerInteiro("Opção: ");
+
+            switch (opcao) {
+                case 1:
+                    selecionarEmpresa();
+                    break;
+                case 2:
+                    criarNovaEmpresa();
+                    break;
+                case 3:
+                    removerEmpresa();
+                    break;
+                case 0:
+                    System.out.println("A sair...");
+                    break;
+                default:
+                    System.out.println("\nOpção invalida!");
+                    pausar();
+
+            }
+        } while (opcao != 0);
+    }
+    private void selecionarEmpresa() {
+        limparEcra();
+        System.out.println("=== SELECIONAR EMPRESA ===\n");
+        ArrayList<String> empresas = gestorFicheiros.listarEmpresasExistentes();
+
+        if (empresas.isEmpty()) {
+            System.out.println("Não existem empresas registadas. Crie uma nova.");
+            pausar();
+            return;
+        }
+
+        System.out.println("Empresas disponiveis:");
+        for (int i = 0; i < empresas.size(); i++) {
+            System.out.println((i + 1) + ". " + empresas.get(i));
+        }
+        System.out.println("0. Voltar");
+        int escolha = lerInteiro("\nEscolha uma empresa:");
+
+        if (escolha > 0 && escolha <= empresas.size()) {
+            String nomeEmpresa = empresas.get(escolha - 1);
+            try {
+                System.out.println("A carregar " + nomeEmpresa + "...");
+                this.gestao = gestorFicheiros.lerTudo(nomeEmpresa);
+                System.out.println("Carregado com sucesso!");
+                pausar();
+
+                menuPrincipal();
+
+            } catch (Exception e) {
+                System.out.println("Erro ao carregar empresa: " + e.getMessage());
+                pausar();
+            }
+        }
+    }
+    private void criarNovaEmpresa() {
+        limparEcra();
+        System.out.println("=== CRIAR NOVA EMPRESA ===\n");
+
+        String nome = lerString("Nome da nova empresa: ");
+        this.gestao = new GestaoTVDE();
+        this.gestao.setNomeEmpresa(nome);
+
+        try{
+            gestorFicheiros.guardarTudo(this.gestao);
+            System.out.println("Empresa '" + nome + "' criada com sucesso!");
+            pausar();
+
+            menuPrincipal();
+        }catch (Exception e) {
+            System.out.println("Erro ao criar os ficheiros da empresa: " + e.getMessage());
+            pausar();
+        }
+    }
+
+    private void removerEmpresa() {
+        limparEcra();
+        System.out.println("=== REMOVER EMPRESA ===\n");
+        System.out.println("ATENCAO: Isto irá apagar TODOS os dados da empresa permanentemente!\n");
+
+        // Usa o metodo que criámos no passo anterior para obter a lista
+        ArrayList<String> empresas = gestorFicheiros.listarEmpresasExistentes();
+
+        if (empresas.isEmpty()) {
+            System.out.println("Não existem empresas registadas para remover.");
+            pausar();
+            return;
+        }
+
+        System.out.println("Empresas disponiveis para remover:");
+        for (int i = 0; i < empresas.size(); i++) {
+            System.out.println((i + 1) + ". " + empresas.get(i));
+        }
+        System.out.println("0. Voltar");
+
+        int escolha = lerInteiro("\nEscolha a empresa a remover: ");
+
+        if (escolha > 0 && escolha <= empresas.size()) {
+            String nomeEmpresa = empresas.get(escolha - 1);
+
+            // Segurança extra: obriga a escrever para confirmar
+            System.out.println("\nTem a certeza que deseja apagar a empresa '" + nomeEmpresa + "'?");
+            String confirmacao = lerString("Deseja eliminar esta empresa? (S/N): ");
+
+            if (confirmacao.equalsIgnoreCase("S")) {
+                if (gestorFicheiros.removerEmpresa(nomeEmpresa)) {
+                    System.out.println("\nEmpresa '" + nomeEmpresa + "' removida com sucesso.");
+                } else {
+                    System.out.println("\nErro ao remover a empresa. Verifique se os ficheiros não estão abertos noutro programa.");
+                }
+            } else if (confirmacao.equalsIgnoreCase("N")){
+                System.out.println("\nOperacao cancelada.");
+            }
+        }
+        pausar();
+    }
     private void menuPrincipal() {
         int opcao;
         do {
             limparEcra();
+            String nomeEmpresa = (gestao.getNomeEmpresa() != null && !gestao.getNomeEmpresa().isEmpty())
+                    ? gestao.getNomeEmpresa().toUpperCase()
+                    : "EMPRESA TVDE";
             System.out.println("╔══════════════════════════════════════════════════════════════╗");
-            System.out.println("║                     MENU PRINCIPAL                           ║");
-            System.out.println("║                      EMPRESA TVDE                            ║");
+            imprimirLinhaCentrada("MENU PRINCIPAL");
+            imprimirLinhaCentrada(nomeEmpresa);
             System.out.println("╠══════════════════════════════════════════════════════════════╣");
             System.out.println("║  1. Gestao de Condutores                                     ║");
             System.out.println("║  2. Gestao de Viaturas                                       ║");
@@ -1360,16 +1488,20 @@ public class Menu {
             return;
         }
 
-        System.out.println("\nData e hora de fim da viagem:");
-        LocalDateTime dataFim = lerDataHora("Data e hora da reserva");
-        if (dataFim == null) {
-            System.out.println("\nData/hora invalida!");
-            pausar();
-            return;
-        }
+        LocalDateTime dataFim;
+        do {
+            System.out.println("\nData e hora de fim da viagem:");
+            // A mensagem dentro do lerDataHora pode ser ajustada para ser mais clara
+            dataFim = lerDataHora("Data/Hora Fim");
 
-        // Validar que data fim e posterior a data inicio
-        // Falta implementar esta validação na classe de leitura de data/hora
+            // Verifica se a data de fim é ANTERIOR à de início
+            if (dataFim.isBefore(reserva.getDataHoraInicio())) {
+                System.out.println("ERRO: A data de fim não pode ser anterior ao início da reserva (" +
+                        reserva.getDataHoraInicio().format(data) + ")!");
+            }
+            // Repete enquanto a data for inválida (anterior ao início)
+        } while (dataFim.isBefore(reserva.getDataHoraInicio()));
+
 
         double kmsReais;
         do {
@@ -1965,7 +2097,7 @@ public class Menu {
                     try {
                         // "empresa" é o nome da pasta padrão.
                         // O lerTudo devolve uma nova gestão, por isso atualizamos o "this.gestao"
-                        this.gestao = gestorFicheiros.lerTudo("Empresa");
+                        this.gestao = gestorFicheiros.lerTudo(this.gestao.getNomeEmpresa());
 
                         System.out.println("\nDados carregados com sucesso!");
                     } catch (java.io.IOException e) {
@@ -2150,5 +2282,33 @@ public class Menu {
                 System.out.println("Erro: Formato inválido! Use o formato: dia-mês-ano hora:minutos (Ex: 15-01-2026 14:30)");
             }
         }
+    }
+
+    /**
+     * Imprime uma linha de menu com o texto centrado entre as bordas '║'.
+     * A largura interna fixa é de 62 caracteres (baseado no seu menu atual).
+     */
+    private void imprimirLinhaCentrada(String texto) {
+        int larguraTotal = 62; // Largura interna entre as barras ║
+
+        if (texto == null) texto = "";
+
+        // Se o texto for maior que a largura, corta para não estragar o menu
+        if (texto.length() > larguraTotal) {
+            texto = texto.substring(0, larguraTotal);
+        }
+
+        int espacosVazios = larguraTotal - texto.length();
+        int espacosEsquerda = espacosVazios / 2;
+        int espacosDireita = espacosVazios - espacosEsquerda;
+
+        System.out.print("║");
+        // Desenha espaços à esquerda
+        for (int i = 0; i < espacosEsquerda; i++) System.out.print(" ");
+        // Escreve o texto
+        System.out.print(texto);
+        // Desenha espaços à direita
+        for (int i = 0; i < espacosDireita; i++) System.out.print(" ");
+        System.out.println("║");
     }
 }

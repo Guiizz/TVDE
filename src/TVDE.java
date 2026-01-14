@@ -21,7 +21,7 @@ public class TVDE {
         System.out.println("╚══════════════════════════════════════════════════════════════╝");
         System.out.println();
         System.out.println("A iniciar o sistema...");
-        System.out.println();
+
 
         // Criar e iniciar o menu
         Menu menu = new Menu();
@@ -30,9 +30,3 @@ public class TVDE {
         System.out.println("\nSistema encerrado.");
     }
 }
-//falta fazer
-//        menus reservas e viagens
-//        voltar a meio de açoes
-//        fazer checklist de todos os topicos que o stor pediu
-//        rever o codigo todo
-//        java docs do resto
