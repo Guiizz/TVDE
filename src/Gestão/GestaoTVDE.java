@@ -900,34 +900,9 @@ public class GestaoTVDE {
         return totalKms;
     }
 
-    /**
-     * 4. Encontra a viatura com mais KMs percorridos num intervalo de datas.
-     * @param inicio Data de inicio
-     * @param fim Data de fim
-     * @return A Viatura com mais KMs (ou null se nao houver dados)
-     */
-    public Viatura getViaturaMaisKms(LocalDateTime inicio, LocalDateTime fim) {
-        Viatura viaturaVencedora = null;
-        double maxKms = -1.0; // Começa negativo para garantir que qualquer valor positivo ganha
-
-        for (Viatura v : viaturas) {
-            double kmsAtuais = getKmsViaturaEntreDatas(v.getId(), inicio, fim);
-
-            // Se esta viatura tem mais KMs que o maximo atual, ela passa a ser a vencedora
-            if (kmsAtuais > maxKms) {
-                maxKms = kmsAtuais;
-                viaturaVencedora = v;
-            }
-        }
-
-        // Se o maximo for 0, significa que ninguem andou.
-        if (maxKms == 0) return null;
-
-        return viaturaVencedora;
-    }
 
     /**
-     * 5. Encontra o destino mais solicitado (em Reservas e Viagens) num intervalo.
+     * 4. Encontra o destino mais solicitado (em Reservas e Viagens) num intervalo.
      * @param inicio Data de inicio
      * @param fim Data de fim
      * @return O nome do destino mais popular (ou null se nao houver dados)
@@ -1000,7 +975,7 @@ public class GestaoTVDE {
     }
 
     /**
-     * 6. Obtem a lista de clientes que fizeram viagens com distancia dentro de um intervalo.
+     * 5. Obtem a lista de clientes que fizeram viagens com distancia dentro de um intervalo.
      * @param minKms Distancia minima
      * @param maxKms Distancia maxima
      * @return Lista de clientes unicos
