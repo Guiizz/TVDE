@@ -844,30 +844,29 @@ public class GestaoTVDE {
     }
 
     /**
-     * 3. Obtem a lista de viagens de um condutor num intervalo de datas.
-     * @param idCondutor ID do condutor
+     * 3.Calcula a distância média das viagens num intervalo de datas.
      * @param inicio Data de inicio
      * @param fim Data de fim
-     * @return Lista de viagens encontradas
+     * @return Média de KMs (ou 0 se não houver viagens)
      */
-    public ArrayList<Viagem> getViagensCondutorEntreDatas(int idCondutor, LocalDateTime inicio, LocalDateTime fim) {
-        ArrayList<Viagem> resultado = new ArrayList<>();
+    public double getDistanciaMediaViagens(LocalDateTime inicio, LocalDateTime fim) {
+        double totalKms = 0.0;
+        int contadorViagens = 0;
 
         for (Viagem v : viagens) {
-            // Verifica se a viagem e deste condutor
-            if (v.getIdCondutor() == idCondutor) {
-                LocalDateTime dataViagem = v.getDataHoraInicio();
+            LocalDateTime data = v.getDataHoraInicio();
+            // Verifica se a viagem está dentro do intervalo
+            if ((data.isEqual(inicio) || data.isAfter(inicio)) &&
+                    (data.isEqual(fim) || data.isBefore(fim))) {
 
-                // Verifica se esta dentro do intervalo
-                boolean depoisDoInicio = dataViagem.isEqual(inicio) || dataViagem.isAfter(inicio);
-                boolean antesDoFim = dataViagem.isEqual(fim) || dataViagem.isBefore(fim);
-
-                if (depoisDoInicio && antesDoFim) {
-                    resultado.add(v);
-                }
+                totalKms += v.getKms();
+                contadorViagens++;
             }
         }
-        return resultado;
+
+        if (contadorViagens == 0) return 0.0;
+
+        return totalKms / contadorViagens;
     }
 
     /**
@@ -996,6 +995,35 @@ public class GestaoTVDE {
 
             // Verifica se a distancia da viagem esta no intervalo
             if (kms >= minKms && kms <= maxKms) {
+                // Vai buscar o cliente pelo ID
+                Cliente c = procurarClientePorId(v.getIdCliente());
+
+                // Se o cliente existe e ainda nao esta na lista, adiciona
+                if (c != null && !resultado.contains(c)) {
+                    resultado.add(c);
+                }
+            }
+        }
+        return resultado;
+    }
+
+    /**
+     * Obtem a lista de clientes que fizeram viagens num intervalo de datas.
+     * @param inicio Data de inicio
+     * @param fim Data de fim
+     * @return Lista de clientes unicos
+     */
+    public ArrayList<Cliente> getClientesComViagensEntreDatas(LocalDateTime inicio, LocalDateTime fim) {
+        ArrayList<Cliente> resultado = new ArrayList<>();
+
+        for (Viagem v : viagens) {
+            LocalDateTime data = v.getDataHoraInicio();
+
+            // Verifica se a data da viagem está dentro do intervalo
+            boolean dentroDoPrazo = (data.isEqual(inicio) || data.isAfter(inicio)) &&
+                    (data.isEqual(fim) || data.isBefore(fim));
+
+            if (dentroDoPrazo) {
                 // Vai buscar o cliente pelo ID
                 Cliente c = procurarClientePorId(v.getIdCliente());
 
