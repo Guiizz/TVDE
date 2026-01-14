@@ -184,8 +184,11 @@ public class GestaoTVDE {
         return null;
     }
 
-    // === NOVOS MÉTODOS DE PROCURA ===
-
+    /**
+     * Procurar condutor por número do cartão de cidadão.
+     * @param numId Número do cartão de cidadão
+     * @return Condutor encontrado ou null
+     */
     public Condutor procurarCondutorPorNumeroIdentificacao(String numId) {
         for (int i = 0; i < numCondutores; i++) {
             Condutor c = condutores.get(i);
@@ -196,6 +199,11 @@ public class GestaoTVDE {
         return null;
     }
 
+    /**
+     * Procurar condutor por carta de condução.
+     * @param carta Carta de condução
+     * @return Condutor encontrado ou null
+     */
     public Condutor procurarCondutorPorCartaConducao(String carta) {
         for (int i = 0; i < numCondutores; i++) {
             Condutor c = condutores.get(i);
@@ -206,6 +214,11 @@ public class GestaoTVDE {
         return null;
     }
 
+    /**
+     * Procurar condutor por número da segurança social.
+     * @param nss Número da segurança social
+     * @return Condutor encontrado ou null
+     */
     public Condutor procurarCondutorPorNss(String nss) {
         for (int i = 0; i < numCondutores; i++) {
             Condutor c = condutores.get(i);
@@ -961,7 +974,12 @@ public class GestaoTVDE {
         return null;
     }
 
-    // Metodo auxiliar privado para ajudar na contagem
+    /**
+     * Metodo auxiliar privado para ajudar na contagem
+     * @param destino Destino
+     * @param nomes Nomes
+     * @param counts
+     */
     private void contabilizarDestino(String destino, ArrayList<String> nomes, ArrayList<Integer> counts) {
         if (destino == null || destino.isEmpty()) return;
 
