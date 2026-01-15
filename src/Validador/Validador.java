@@ -189,6 +189,14 @@ public class Validador {
         return carta.toUpperCase();
     }
 
+    // Formatar email para minusculas
+    public static String formatarEmail(String email) {
+        if (email == null) {
+            return "";
+        }
+        return email.trim().toLowerCase();
+    }
+
     public static String getMensagemErroTelefone() {
         return "Telefone invalido! Deve ter 9 digitos.";
     }

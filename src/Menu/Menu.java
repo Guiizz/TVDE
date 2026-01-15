@@ -542,25 +542,44 @@ public class Menu {
     }
 
     /**
-     * Remove um condutor.
+     * Remove um condutor com confirmação.
      */
     private void removerCondutor() {
         limparEcra();
         System.out.println("=== REMOVER CONDUTOR ===\n");
 
         int id = lerInteiroPositivo("ID do condutor: ");
-        int resultado = gestao.removerCondutor(id);
 
-        switch (resultado) {
-            case 0:
-                System.out.println("\nCondutor removido com sucesso!");
-                break;
-            case -1:
-                System.out.println("\nCondutor nao encontrado!");
-                break;
-            case -2:
-                System.out.println("\nNao e possivel remover! O condutor tem viagens associadas.");
-                break;
+
+        Condutor c = gestao.procurarCondutorPorId(id);
+
+        if (c == null) {
+            System.out.println("\nCondutor não encontrado!");
+            pausar();
+            return;
+        }
+
+        System.out.println("\nVai remover o seguinte condutor:");
+        System.out.println(c.toString());
+
+        String confirmacao = lerString("\nTem a certeza que deseja remover este condutor? (S/N): ");
+
+        if (confirmacao.equalsIgnoreCase("S")) {
+            int resultado = gestao.removerCondutor(id);
+
+            switch (resultado) {
+                case 0:
+                    System.out.println("\nCondutor removido com sucesso!");
+                    break;
+                case -1:
+                    System.out.println("\nErro: Condutor não encontrado (foi apagado entretanto?).");
+                    break;
+                case -2:
+                    System.out.println("\nNão é possível remover! O condutor tem viagens associadas.");
+                    break;
+            }
+        } else {
+            System.out.println("\nOperação cancelada.");
         }
         pausar();
     }
@@ -825,27 +844,46 @@ public class Menu {
         pausar();
     }
 
+    /**
+     * remove viatura com confirmcao
+     */
     private void removerViatura() {
         limparEcra();
         System.out.println("=== REMOVER VIATURA ===\n");
 
         int id = lerInteiroPositivo("ID da viatura: ");
 
-        // Chama o metodo na gestão que verifica se tem viagens/reservas antes de apagar
-        int resultado = gestao.removerViatura(id);
+        Viatura v = gestao.procurarViaturaPorId(id);
 
-        switch (resultado) {
-            case 0:
-                System.out.println("\nViatura removida com sucesso!");
-                break;
-            case -1:
-                System.out.println("\nViatura nao encontrada!");
-                break;
-            case -2:
-                System.out.println("\nERRO: Nao e possivel remover! A viatura tem viagens ou reservas associadas.");
-                break;
-            default:
-                System.out.println("\nErro desconhecido.");
+        if (v == null) {
+            System.out.println("\nViatura não encontrada!");
+            pausar();
+            return;
+        }
+
+        System.out.println("\nVai remover a seguinte viatura:");
+        System.out.println(v.toString());
+
+        String confirmacao = lerString("\nTem a certeza que deseja remover esta viatura? (S/N): ");
+
+        if (confirmacao.equalsIgnoreCase("S")) {
+            int resultado = gestao.removerViatura(id);
+
+            switch (resultado) {
+                case 0:
+                    System.out.println("\nViatura removida com sucesso!");
+                    break;
+                case -1:
+                    System.out.println("\nViatura não encontrada!");
+                    break;
+                case -2:
+                    System.out.println("\nERRO: Não é possível remover! A viatura tem viagens ou reservas associadas.");
+                    break;
+                default:
+                    System.out.println("\nErro desconhecido.");
+            }
+        } else {
+            System.out.println("\nOperação cancelada.");
         }
         pausar();
     }
@@ -933,6 +971,8 @@ public class Menu {
         do {
             emailExiste = false;
             email = lerString("Email: ");
+
+            email = Validador.formatarEmail(email);
 
             if (!Validador.validarEmail(email)) {
                 System.out.println(Validador.getMensagemErroEmail());
@@ -1063,7 +1103,7 @@ public class Menu {
             }
         }
 
-        //VERIFICA DUPLICADOS
+        // VERIFICA DUPLICADOS
         boolean emailValido = false;
         do {
             String inputEmail = lerStringOpcional("Novo Email [" + c.getEmail() + "]: ");
@@ -1071,6 +1111,9 @@ public class Menu {
             if (inputEmail.isEmpty()) {
                 emailValido = true; // Mantém o antigo
             } else {
+
+                inputEmail = Validador.formatarEmail(inputEmail);
+
                 if (!Validador.validarEmail(inputEmail)) {
                     System.out.println(Validador.getMensagemErroEmail());
                 } else {
@@ -1087,31 +1130,48 @@ public class Menu {
                 }
             }
         } while (!emailValido);
-
         System.out.println("\nCliente atualizado com sucesso!");
         pausar();
     }
 
     /**
-     * Remove um cliente.
+     * Remove um cliente com confirmação.
      */
     private void removerCliente() {
         limparEcra();
         System.out.println("=== REMOVER CLIENTE ===\n");
 
         int id = lerInteiroPositivo("ID do cliente: ");
-        int resultado = gestao.removerCliente(id);
 
-        switch (resultado) {
-            case 0:
-                System.out.println("\nCliente removido com sucesso!");
-                break;
-            case -1:
-                System.out.println("\nCliente nao encontrado!");
-                break;
-            case -2:
-                System.out.println("\nNao e possivel remover! O condutor tem viagens associadas.");
-                break;
+        Cliente c = gestao.procurarClientePorId(id);
+
+        if (c == null) {
+            System.out.println("\nCliente não encontrado!");
+            pausar();
+            return;
+        }
+
+        System.out.println("\nVai remover o seguinte cliente:");
+        System.out.println(c.toString());
+
+        String confirmacao = lerString("\nTem a certeza que deseja remover este cliente? (S/N): ");
+
+        if (confirmacao.equalsIgnoreCase("S")) {
+            int resultado = gestao.removerCliente(id);
+
+            switch (resultado) {
+                case 0:
+                    System.out.println("\nCliente removido com sucesso!");
+                    break;
+                case -1:
+                    System.out.println("\nErro: Cliente não encontrado!");
+                    break;
+                case -2:
+                    System.out.println("\nNão é possível remover! O cliente tem viagens ou reservas associadas.");
+                    break;
+            }
+        } else {
+            System.out.println("\nOperação cancelada.");
         }
         pausar();
     }
@@ -1385,11 +1445,21 @@ public class Menu {
         Reserva reserva = gestao.procurarReservaPorId(id);
 
         if (reserva == null) {
-            System.out.println("\nReserva nao encontrada!");
-        } else if (!reserva.isAtiva()){
-            System.out.println("\nA reserva ja se encontra cancelada!");
+            System.out.println("\nReserva não encontrada!");
+        } else if (!reserva.isAtiva()) {
+            System.out.println("\nA reserva já se encontra cancelada ou concluída!");
         } else {
-            System.out.println("\nReserva cancelada com sucesso!");
+            System.out.println("\nVai cancelar a seguinte reserva:");
+            System.out.println(reserva.toString());
+
+            String confirmacao = lerString("\nTem a certeza que deseja cancelar esta reserva? (S/N): ");
+
+            if (confirmacao.equalsIgnoreCase("S")) {
+                reserva.setAtiva(false);
+                System.out.println("\nReserva cancelada com sucesso!");
+            } else {
+                System.out.println("\nOperação anulada.");
+            }
         }
         pausar();
     }
@@ -1400,10 +1470,27 @@ public class Menu {
 
         int id = lerInteiroPositivo("ID da reserva: ");
 
-        if (gestao.removerReserva(id)) {
-            System.out.println("\nReserva removida com sucesso!");
+        Reserva r = gestao.procurarReservaPorId(id);
+
+        if (r == null) {
+            System.out.println("\nReserva não encontrada!");
+            pausar();
+            return;
+        }
+
+        System.out.println("\nVai apagar permanentemente a reserva:");
+        System.out.println(r.toString());
+
+        String confirmacao = lerString("\nTem a certeza que deseja apagar? (S/N): ");
+
+        if (confirmacao.equalsIgnoreCase("S")) {
+            if (gestao.removerReserva(id)) {
+                System.out.println("\nReserva removida com sucesso!");
+            } else {
+                System.out.println("\nErro ao remover reserva!");
+            }
         } else {
-            System.out.println("\nReserva nao encontrada!");
+            System.out.println("\nOperação cancelada.");
         }
 
         pausar();
@@ -1655,25 +1742,168 @@ public class Menu {
     }
 
     /**
-     * Lista todos as viagens.
+     * Menu de listagem de viagens.
      */
     private void listarViagens() {
         limparEcra();
-        System.out.println("=== LISTA DE VIAGENS ===\n");
+        System.out.println("=== LISTAR VIAGENS ===\n");
+        System.out.println("1. Listar TODAS as viagens");
+        System.out.println("2. Filtrar por Cliente");
+        System.out.println("3. Filtrar por Condutor");
+        System.out.println("4. Filtrar por Viatura");
+        System.out.println("0. Voltar");
 
-        ArrayList<Viagem> viagems = gestao.getViagens();
-        int numViagens = gestao.getNumeroViagens();
+        int opcao = lerInteiro("\nOpcao: ");
 
-        if (numViagens == 0) {
-            System.out.println("Nenhuma viagem registada.");
-        } else {
-            for (int i = 0; i < numViagens; i++) {
-                System.out.println(viagems.get(i).toString());
-            }
-            System.out.println("\nTotal: " + numViagens + " Viagem(es)");
+        switch (opcao) {
+            case 1:
+                listarTodasViagens();
+                break;
+            case 2:
+                listarViagensCliente();
+                break;
+            case 3:
+                listarViagensCondutor();
+                break;
+            case 4:
+                listarViagensViatura();
+                break;
+            case 0:
+                return;
+            default:
+                System.out.println("Opcao invalida.");
+                pausar();
         }
+    }
+
+    /**
+     * Lista todas as viagens sem filtro.
+     */
+    private void listarTodasViagens() {
+        limparEcra();
+        System.out.println("\n--- TODAS AS VIAGENS ---");
+        imprimirListaViagens(gestao.getViagens());
         pausar();
     }
+
+    /**
+     * Pede o ID do cliente e permite listar todas ou filtrar por datas.
+     */
+    private void listarViagensCliente() {
+        limparEcra();
+        int idCliente = lerInteiroPositivo("\nID do Cliente: ");
+        Cliente c = gestao.procurarClientePorId(idCliente);
+
+        if (c == null) {
+            System.out.println("Cliente nao encontrado.");
+            pausar();
+            return;
+        }
+
+        System.out.println("\n--- Viagens do Cliente: " + c.getNome() + " ---");
+        System.out.println("1. Ver todas as viagens");
+        System.out.println("2. Filtrar por intervalo de datas");
+        System.out.println("0. Voltar");
+
+        int opcao = lerInteiro("\nOpcao: ");
+
+        ArrayList<Viagem> lista = new ArrayList<>();
+
+        if (opcao == 1) {
+            gestao.getViagensCliente(idCliente, lista);
+
+        } else if (opcao == 2) {
+            System.out.println("\nDefina o intervalo:");
+            LocalDateTime inicio = lerDataHora("Data Inicio ");
+            LocalDateTime fim = lerDataHora("Data Fim ");
+
+            if (inicio.isAfter(fim)) {
+                System.out.println("\nErro: A data de inicio nao pode ser superior a data de fim.");
+                pausar();
+                return;
+            }
+
+            gestao.getViagensClienteEntreDatas(idCliente, inicio, fim, lista);
+
+        } else if (opcao == 0) {
+            return;
+        } else {
+            System.out.println("Opcao invalida.");
+            pausar();
+            return;
+        }
+
+        imprimirListaViagens(lista);
+        pausar();
+    }
+
+    /**
+     * Pede o ID do condutor e lista as suas viagens.
+     */
+    private void listarViagensCondutor() {
+        limparEcra();
+        int idCondutor = lerInteiroPositivo("\nID do Condutor: ");
+        Condutor c = gestao.procurarCondutorPorId(idCondutor);
+
+        if (c == null) {
+            System.out.println("Condutor nao encontrado.");
+            pausar();
+            return;
+        }
+
+        System.out.println("\n--- Viagens do Condutor: " + c.getNome() + " ---");
+        imprimirListaViagens(gestao.getViagensPorCondutor(idCondutor));
+        pausar();
+    }
+
+    /**
+     * Permite pesquisar viatura por ID ou Matrícula e lista as suas viagens.
+     */
+    private void listarViagensViatura() {
+        limparEcra();
+        System.out.println("=== VIAGENS POR VIATURA ===\n");
+        System.out.println("Pesquisar viatura por:");
+        System.out.println("1. ID");
+        System.out.println("2. Matrícula");
+        System.out.println("0. Voltar");
+
+        int opcao = lerInteiro("\nOpcao: ");
+        Viatura viatura = null;
+
+        if (opcao == 1) {
+            int idViatura = lerInteiroPositivo("ID da Viatura: ");
+            viatura = gestao.procurarViaturaPorId(idViatura);
+
+        } else if (opcao == 2) {
+            String inputMatricula = lerString("Matrícula: ");
+
+            String matriculaFormatada = Validador.formatarMatricula(inputMatricula);
+
+            viatura = gestao.procurarViaturaPorMatricula(matriculaFormatada);
+
+        } else if (opcao == 0) {
+            return;
+        } else {
+            System.out.println("Opcao invalida.");
+            pausar();
+            return;
+        }
+
+        if (viatura == null) {
+            System.out.println("Viatura nao encontrada.");
+            pausar();
+            return;
+        }
+
+        System.out.println("\n--- Viagens da Viatura: " + viatura.getMatricula() +
+                " (" + viatura.getMarca() + " " + viatura.getModelo() + ") ---");
+
+        ArrayList<Viagem> lista = gestao.getViagensPorViatura(viatura.getId());
+
+        imprimirListaViagens(lista);
+        pausar();
+    }
+
 
     /**
      * Consulta uma viagem pelo ID.
@@ -1801,7 +2031,7 @@ public class Menu {
     }
 
     /**
-     * Remove um condutor.
+     * Remove uma viagem com confirmação.
      */
     private void removerViagem() {
         limparEcra();
@@ -1812,13 +2042,19 @@ public class Menu {
         Viagem v = gestao.procurarViagemPorId(id);
 
         if (v != null) {
-            System.out.println("Vai apagar: " + v.toString());
-            if (lerString("Deseja remover viagem? (S/N").equalsIgnoreCase("S")) {
+            System.out.println("\nVai remover o seguinte registo de viagem:");
+            System.out.println(v.toString());
+
+            String confirmacao = lerString("\nTem a certeza que deseja remover esta viagem? (S/N): ");
+
+            if (confirmacao.equalsIgnoreCase("S")) {
                 gestao.removerViagem(id);
-                System.out.println("Viagem removida com sucesso.");
+                System.out.println("\nViagem removida com sucesso.");
+            } else {
+                System.out.println("\nOperação cancelada.");
             }
         } else {
-            System.out.println("Viagem não encontrada.");
+            System.out.println("\nViagem não encontrada.");
         }
         pausar();
     }
@@ -2310,5 +2546,32 @@ public class Menu {
         // Desenha espaços à direita
         for (int i = 0; i < espacosDireita; i++) System.out.print(" ");
         System.out.println("║");
+    }
+
+    /**
+     * Metodo auxiliar para imprimir qualquer lista de viagens de forma formatada.
+     */
+    private void imprimirListaViagens(ArrayList<Viagem> lista) {
+        if (lista == null || lista.isEmpty()) {
+            System.out.println("Nenhuma viagem encontrada para este criterio.");
+            return;
+        }
+
+        System.out.println("----------------------------------------------------------------------------------");
+        System.out.printf("%-5s | %-12s | %-12s | %-16s | %-10s | %-8s\n",
+                "ID", "Condutor(ID)", "Cliente(ID)", "Data", "Kms", "Custo");
+        System.out.println("----------------------------------------------------------------------------------");
+
+        for (Viagem v : lista) {
+            System.out.printf("%-5d | %-12d | %-12d | %-16s | %-10.1f | %-8.2f\n",
+                    v.getId(),
+                    v.getIdCondutor(),
+                    v.getIdCliente(),
+                    v.getDataHoraInicio().format(java.time.format.DateTimeFormatter.ofPattern("dd-MM HH:mm")),
+                    v.getKms(),
+                    v.getCusto());
+        }
+        System.out.println("----------------------------------------------------------------------------------");
+        System.out.println("Total: " + lista.size() + " viagem(ns)");
     }
 }

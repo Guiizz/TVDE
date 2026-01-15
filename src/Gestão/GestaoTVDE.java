@@ -697,6 +697,36 @@ public class GestaoTVDE {
     }
 
     /**
+     * Obtem as viagens de um condutor.
+     * @param idCondutor ID do condutor
+     * @return ArrayList de viagens do condutor
+     */
+    public ArrayList<Viagem> getViagensPorCondutor(int idCondutor) {
+        ArrayList<Viagem> resultado = new ArrayList<>();
+        for (Viagem v : viagens) {
+            if (v.getIdCondutor() == idCondutor) {
+                resultado.add(v);
+            }
+        }
+        return resultado;
+    }
+
+    /**
+     * Obtem as viagens de uma viatura.
+     * @param idViatura ID da viatura
+     * @return ArrayList de viagens da viatura
+     */
+    public ArrayList<Viagem> getViagensPorViatura(int idViatura) {
+        ArrayList<Viagem> resultado = new ArrayList<>();
+        for (Viagem v : viagens) {
+            if (v.getIdViatura() == idViatura) {
+                resultado.add(v);
+            }
+        }
+        return resultado;
+    }
+
+    /**
      * Obtem o número de viagens.
      * @return número de viagens
      */
