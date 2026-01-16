@@ -163,6 +163,13 @@ public class Menu {
     private void menuPrincipal() {
         int opcao;
         do {
+            if (gestao != null) {
+                int convertidas = gestao.processarReservasExpiradas();
+                if (convertidas > 0) {
+                    System.out.println("\n[AVISO AUTOMATICO] " + convertidas + " reserva(s) passada(s) convertida(s) em viagem.");
+                    pausar();
+                }
+            }
             limparEcra();
             String nomeEmpresa = (gestao.getNomeEmpresa() != null && !gestao.getNomeEmpresa().isEmpty())
                     ? gestao.getNomeEmpresa().toUpperCase()

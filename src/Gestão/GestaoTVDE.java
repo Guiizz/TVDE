@@ -594,8 +594,55 @@ public class GestaoTVDE {
         return numReservas;
     }
 
+    /**
+     * Verifica todas as reservas ativas. Se a data de fim já passou,
+     * tenta converter em viagem automaticamente.
+     */
+    public int processarReservasExpiradas() {
+        int convertidas = 0;
+        LocalDateTime agora = LocalDateTime.now();
 
+        for (Reserva r : reservas) {
+            // Se a reserva está ativa E a hora de fim já passou
+            if (r.isAtiva() && agora.isAfter(r.getDataHoraFim())) {
 
+                // 1. Tentar encontrar um condutor para esta reserva
+                int idCondutor = obterCondutorDisponivel(r.getDataHoraInicio(), r.getDataHoraFim());
+
+                if (idCondutor != -1) {
+                    // 2. Se encontrou condutor, converte em viagem
+                    converterReservaEmViagem(r.getId(), idCondutor);
+                    convertidas++;
+                } else {
+                    // (Opcional) Podes fazer um print aqui se quiseres saber que falhou
+                    // System.out.println("Reserva " + r.getId() + " expirada mas sem condutores disponíveis.");
+                }
+            }
+        }
+        return convertidas;
+    }
+
+    public void converterReservaEmViagem(int idReserva, int idCondutor) {
+        Reserva r = procurarReservaPorId(idReserva);
+        if (r == null || !r.isAtiva()) return;
+
+        // Calcula custo (ex: 0.70€ por Km)
+        double custo = r.getKms() * 0.70;
+
+        // Cria a Viagem
+        Viagem novaViagem = new Viagem(
+                idCondutor, r.getIdCliente(), r.getIdViatura(),
+                r.getDataHoraInicio(), r.getDataHoraFim(),
+                r.getMoradaOrigem(), r.getMoradaDestino(),
+                r.getKms(), custo
+        );
+
+        viagens.add(novaViagem);
+        numViagens++;
+
+        // Desativa a reserva para não ser processada novamente
+        r.setAtiva(false);
+    }
     // ==================== OPERACOES CRUD VIAGENS ====================
 
     /**
@@ -814,6 +861,32 @@ public class GestaoTVDE {
         return inicioA.isBefore(finalB) && fimA.isAfter(inicioB);
     }
 
+    /**
+     * Procura um condutor que não tenha viagens marcadas no horário da reserva.
+     */
+    public int obterCondutorDisponivel(LocalDateTime inicio, LocalDateTime fim) {
+        // Percorre todos os condutores da empresa
+        for (Condutor c : condutores) {
+            boolean ocupado = false;
+
+            // Verifica se este condutor tem alguma viagem que colida com o horário
+            for (Viagem v : viagens) {
+                if (v.getIdCondutor() == c.getId()) {
+                    // Se houver conflito de horário, este condutor não serve
+                    if (verificarConflitoTempo(inicio, fim, v.getDataHoraInicio(), v.getDataHoraFim())) {
+                        ocupado = true;
+                        break;
+                    }
+                }
+            }
+
+            // Se não estiver ocupado, devolve o ID deste condutor
+            if (!ocupado) {
+                return c.getId();
+            }
+        }
+        return -1; // Nenhum condutor disponível
+    }
 // ==================== ESTATÍSTICAS E RELATÓRIOS ====================
 
     /**
