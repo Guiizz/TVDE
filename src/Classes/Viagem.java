@@ -282,7 +282,7 @@ public class Viagem {
      */
     @Override
     public String toString() {
-        return "ID: " + id + " | Cliente ID: " + idCliente + " | " +
+        return "ID: " + id + " | Condutor ID: " + idCondutor + " | Cliente ID: " + idCliente + " | " +
                 dataHoraInicio + " | " + String.format("%.2f", custo) + " EUR";
     }
 

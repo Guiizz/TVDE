@@ -547,11 +547,23 @@ public class Menu {
     private void removerCondutor() {
         limparEcra();
         System.out.println("=== REMOVER CONDUTOR ===\n");
+        System.out.println("Procurar por:");
+        System.out.println("1. ID");
+        System.out.println("2. NIF");
+        System.out.println("0. Cancelar");
 
-        int id = lerInteiroPositivo("ID do condutor: ");
+        int opcao = lerInteiro("\nOpcao: ");
+        Condutor c = null;
 
-
-        Condutor c = gestao.procurarCondutorPorId(id);
+        if (opcao == 1) {
+            int id = lerInteiroPositivo("ID do condutor: ");
+            c = gestao.procurarCondutorPorId(id);
+        } else if (opcao == 2) {
+            String nif = lerString("NIF do condutor: ");
+            c = gestao.procurarCondutorPorNif(nif);
+        } else {
+            return;
+        }
 
         if (c == null) {
             System.out.println("\nCondutor não encontrado!");
@@ -559,20 +571,21 @@ public class Menu {
             return;
         }
 
+        // Mostrar resumo e confirmar
         System.out.println("\nVai remover o seguinte condutor:");
         System.out.println(c.toString());
 
         String confirmacao = lerString("\nTem a certeza que deseja remover este condutor? (S/N): ");
 
         if (confirmacao.equalsIgnoreCase("S")) {
-            int resultado = gestao.removerCondutor(id);
+            int resultado = gestao.removerCondutor(c.getId());
 
             switch (resultado) {
                 case 0:
                     System.out.println("\nCondutor removido com sucesso!");
                     break;
                 case -1:
-                    System.out.println("\nErro: Condutor não encontrado (foi apagado entretanto?).");
+                    System.out.println("\nErro: Condutor não encontrado.");
                     break;
                 case -2:
                     System.out.println("\nNão é possível remover! O condutor tem viagens associadas.");
@@ -850,10 +863,24 @@ public class Menu {
     private void removerViatura() {
         limparEcra();
         System.out.println("=== REMOVER VIATURA ===\n");
+        System.out.println("Procurar por:");
+        System.out.println("1. ID");
+        System.out.println("2. Matrícula");
+        System.out.println("0. Cancelar");
 
-        int id = lerInteiroPositivo("ID da viatura: ");
+        int opcao = lerInteiro("\nOpcao: ");
+        Viatura v = null;
 
-        Viatura v = gestao.procurarViaturaPorId(id);
+        if (opcao == 1) {
+            int id = lerInteiroPositivo("ID da viatura: ");
+            v = gestao.procurarViaturaPorId(id);
+        } else if (opcao == 2) {
+            String mat = lerString("Matrícula: ");
+            String matFormatada = Validador.formatarMatricula(mat);
+            v = gestao.procurarViaturaPorMatricula(matFormatada);
+        } else {
+            return;
+        }
 
         if (v == null) {
             System.out.println("\nViatura não encontrada!");
@@ -861,13 +888,14 @@ public class Menu {
             return;
         }
 
+        // Mostrar resumo e confirmar
         System.out.println("\nVai remover a seguinte viatura:");
-        System.out.println(v.toString());
+        System.out.println(v.toStringDetalhado());
 
         String confirmacao = lerString("\nTem a certeza que deseja remover esta viatura? (S/N): ");
 
         if (confirmacao.equalsIgnoreCase("S")) {
-            int resultado = gestao.removerViatura(id);
+            int resultado = gestao.removerViatura(v.getId()); // Remove sempre pelo ID interno
 
             switch (resultado) {
                 case 0:
@@ -879,8 +907,6 @@ public class Menu {
                 case -2:
                     System.out.println("\nERRO: Não é possível remover! A viatura tem viagens ou reservas associadas.");
                     break;
-                default:
-                    System.out.println("\nErro desconhecido.");
             }
         } else {
             System.out.println("\nOperação cancelada.");
@@ -1140,10 +1166,23 @@ public class Menu {
     private void removerCliente() {
         limparEcra();
         System.out.println("=== REMOVER CLIENTE ===\n");
+        System.out.println("Procurar por:");
+        System.out.println("1. ID");
+        System.out.println("2. NIF");
+        System.out.println("0. Cancelar");
 
-        int id = lerInteiroPositivo("ID do cliente: ");
+        int opcao = lerInteiro("\nOpcao: ");
+        Cliente c = null;
 
-        Cliente c = gestao.procurarClientePorId(id);
+        if (opcao == 1) {
+            int id = lerInteiroPositivo("ID do cliente: ");
+            c = gestao.procurarClientePorId(id);
+        } else if (opcao == 2) {
+            String nif = lerString("NIF do cliente: ");
+            c = gestao.procurarClientePorNif(nif);
+        } else {
+            return;
+        }
 
         if (c == null) {
             System.out.println("\nCliente não encontrado!");
@@ -1151,13 +1190,14 @@ public class Menu {
             return;
         }
 
+        // Mostrar resumo e confirmar
         System.out.println("\nVai remover o seguinte cliente:");
         System.out.println(c.toString());
 
         String confirmacao = lerString("\nTem a certeza que deseja remover este cliente? (S/N): ");
 
         if (confirmacao.equalsIgnoreCase("S")) {
-            int resultado = gestao.removerCliente(id);
+            int resultado = gestao.removerCliente(c.getId());
 
             switch (resultado) {
                 case 0:
@@ -1230,80 +1270,50 @@ public class Menu {
         limparEcra();
         System.out.println("=== CRIAR RESERVA ===\n");
 
-        //Listar clientes
-        if (gestao.getNumeroClientes() == 0) {
-            System.out.println("Não existem clientes resgistados!");
+        if (gestao.getNumeroClientes() == 0 || gestao.getNumeroViaturas() == 0) {
+            System.out.println("Faltam dados (Clientes ou Viaturas).");
             pausar();
             return;
         }
 
-        System.out.println("Clientes Disponiveis:");
-        ArrayList<Cliente> clientes = gestao.getClientes();
-        int numClientes = gestao.getNumeroClientes();
-        for (int i = 0; i < numClientes; i++) {
-            System.out.println(clientes.get(i).toString());
-        }
+        // 1. Cliente
+        int idCliente = lerInteiroPositivo("ID do Cliente: ");
+        if (gestao.procurarClientePorId(idCliente) == null) { System.out.println("Cliente não encontrado."); pausar(); return; }
 
-        int idCliente = lerInteiroPositivo("\nID do Cliente: ");
-        Cliente cliente = gestao.procurarClientePorId(idCliente);
-        if (cliente == null) {
-            System.out.println("\nCliente nao encontrado!");
-            pausar();
-            return;
-        }
+        // 2. Viatura
+        int idViatura = lerInteiroPositivo("ID da Viatura: ");
+        if (gestao.procurarViaturaPorId(idViatura) == null) { System.out.println("Viatura não encontrada."); pausar(); return; }
 
-        //Listar viaturas
-        int idViatura = 0;
-        if (gestao.getNumeroViaturas() > 0) {
-            System.out.println("\nViaturas Disponiveis:");
-            ArrayList<Viatura> viaturas = gestao.getViaturas();
-            int numViaturas = gestao.getNumeroViaturas();
-            for (int i = 0; i < numViaturas; i++) {
-                System.out.println(viaturas.get(i).toString());
-            }
-
-            idViatura = lerInteiroPositivo("\nID da Viatura: ");
-            Viatura viatura = gestao.procurarViaturaPorId(idViatura);
-            if (viatura == null) {
-                System.out.println("\nViatura nao encontrada!");
-                pausar();
-                return;
-            }
-        } else {
-            System.out.println("\nNao existem viaturas registadas!");
-            pausar();
-            return;
-        }
-
-        System.out.println("\nData e hora da reserva:");
-        LocalDateTime dataHora = lerDataHora("Data e hora da reserva");
-        if (dataHora == null) {
-            System.out.println("\nData/hora invalida!");
-            pausar();
-            return;
-        }
-
-        //Morada de origem
-        String origem = lerStringComValidacao("Morada de Origem (minimo 5 caracteres): ",5);
-
-        //Morada de destino
-        String destino = lerStringComValidacao("Morada de Destino (minimo 5 caracteres): ",5);
-
-        //Kms
-        double kms;
+        // 3. Datas (COM VALIDAÇÃO DE FUTURO)
+        LocalDateTime inicio;
         do {
-            kms = lerDoublePositivo("Distancia estimada (km): ");
-            if (!Validador.validarKms(kms)) {
-                System.out.println(Validador.getMensagemErroKms());
+            inicio = lerDataHora("Data Inicio");
+            if (inicio.isBefore(LocalDateTime.now())) {
+                System.out.println("Erro: A reserva tem de ser feita para uma data futura!");
             }
-        } while (!Validador.validarKms(kms));
+        } while (inicio.isBefore(LocalDateTime.now()));
 
-        Reserva reserva = new Reserva(idCliente, idViatura, dataHora, origem, destino, kms);
+        LocalDateTime fim;
+        do {
+            fim = lerDataHora("Data Fim");
+            if (fim.isBefore(inicio)) {
+                System.out.println("A data de fim tem de ser posterior ao inicio.");
+            }
+        } while (fim.isBefore(inicio));
 
-        if (gestao.adicionarReserva(reserva)) {
-            System.out.println("\nReserva criada com sucesso! (ID: " + reserva.getId() + ")");
+        // 4. Origem e Destino (Novos campos)
+        String origem = lerStringComValidacao("Morada Origem: ", 3);
+        String destino = lerStringComValidacao("Morada Destino: ", 3);
+
+        //5. KMS
+        double kms = lerDoublePositivo("KMS: ");
+
+        Reserva r = new Reserva(idCliente, idViatura, inicio, origem, destino, kms);
+
+        if (gestao.adicionarReserva(r)) {
+            System.out.println("\nReserva criada com sucesso!");
         } else {
-            System.out.println("\nErro ao criar reserva!");
+            System.out.println("\nErro: A viatura já está ocupada ou reservada neste horário.");
         }
         pausar();
     }
@@ -1383,8 +1393,8 @@ public class Menu {
         for (int i = 0; i < numReservas; i++) {
             Reserva reserva = reservas.get(i);
             System.out.println((i + 1) + ". " + reserva.toString());
-            System.out.println("   Origem: " + reserva.getMoradaOrigem());
-            System.out.println("   Destino: " + reserva.getMoradaDestino());
+            System.out.println("   Morada de Origem: " + reserva.getMoradaOrigem());
+            System.out.println("   Morada de Destino: " + reserva.getMoradaDestino());
         }
 
         System.out.println("\n0. Voltar");
@@ -1660,83 +1670,61 @@ public class Menu {
         limparEcra();
         System.out.println("=== ADICIONAR VIAGEM ===\n");
 
-        //VERIFICAR SE EXISTE OS DADOS NECESSARIOS
-        if (gestao.getNumeroCondutores() == 0) {
-            System.out.println("Não existe condutores registados!");
-            pausar();
-            return;
-        }
-        if (gestao.getNumeroViaturas() == 0) {
-            System.out.println("Não existe viaturas registados!");
-            pausar();
-            return;
-        }
-        if (gestao.getNumeroClientes() == 0) {
-            System.out.println("Não existe clientes registados!");
+        if (gestao.getNumeroCondutores() == 0 || gestao.getNumeroViaturas() == 0 || gestao.getNumeroClientes() == 0) {
+            System.out.println("Faltam dados (Condutores, Viaturas ou Clientes) para criar viagem.");
             pausar();
             return;
         }
 
-        //Selecionar condutor
+        // 1. Condutor
         System.out.println("Condutores disponiveis:");
-        ArrayList<Condutor> condutores = gestao.getCondutores();
-        int numCondutores = gestao.getNumeroCondutores();
-        for (int i = 0; i < numCondutores; i++){
-            System.out.println(condutores.get(i).toString());
-        }
+        for (Condutor c : gestao.getCondutores()) System.out.println(c.toString());
         int idCondutor = lerInteiroPositivo("\nID do condutor: ");
-        if (gestao.procurarCondutorPorId(idCondutor) == null) {
-            System.out.println("\nCondutor não encontrado!");
-            pausar();
-            return;
-        }
-        //Selecionar viatua
-        System.out.println("Viaturas disponiveis:");
-        ArrayList<Viatura> viaturas = gestao.getViaturas();
-        int numViaturas = gestao.getNumeroViaturas();
-        for (int i = 0; i < numViaturas; i++){
-            System.out.println(viaturas.get(i).toString());
-        }
-        int idViatura = lerInteiroPositivo("\nID do condutor: ");
-        if (gestao.procurarViaturaPorId(idViatura) == null) {
-            System.out.println("\nViatura não encontrada!");
-            pausar();
-            return;
-        }
-        //Selecionar cliente
-        System.out.println("Clientes disponiveis:");
-        ArrayList<Cliente> clientes = gestao.getClientes();
-        int numCliente = gestao.getNumeroClientes();
-        for (int i = 0; i < numCliente; i++){
-            System.out.println(clientes.get(i).toString());
-        }
-        int idCliente = lerInteiroPositivo("\nID do condutor: ");
-        if (gestao.procurarClientePorId(idCliente) == null) {
-            System.out.println("\nCliente não encontrado!");
-            pausar();
-            return;
-        }
+        if (gestao.procurarCondutorPorId(idCondutor) == null) { System.out.println("Não encontrado!"); pausar(); return; }
 
-        //Ler datas
-        LocalDateTime inicio = lerDataHora("Data/Hora inicio");
+        // 2. Viatura
+        System.out.println("\nViaturas disponiveis:");
+        for (Viatura v : gestao.getViaturas()) System.out.println(v.toString());
+        int idViatura = lerInteiroPositivo("\nID da viatura: ");
+        if (gestao.procurarViaturaPorId(idViatura) == null) { System.out.println("Não encontrada!"); pausar(); return; }
+
+        // 3. Cliente
+        System.out.println("\nClientes disponiveis:");
+        for (Cliente c : gestao.getClientes()) System.out.println(c.toString());
+        int idCliente = lerInteiroPositivo("\nID do cliente: ");
+        if (gestao.procurarClientePorId(idCliente) == null) { System.out.println("Não encontrado!"); pausar(); return; }
+
+        // 4. Datas (COM VALIDAÇÃO DE FUTURO)
+        LocalDateTime inicio;
+        do {
+            inicio = lerDataHora("Data/Hora inicio");
+            if (inicio.isBefore(LocalDateTime.now())) {
+                System.out.println("Erro: A data de inicio tem de ser superior à data atual (futuro)!");
+            }
+        } while (inicio.isBefore(LocalDateTime.now()));
+
         LocalDateTime fim;
         do {
             fim = lerDataHora("Data/Hora Fim");
             if (fim.isBefore(inicio)) {
-                System.out.println("A Data/Hora de fim não pode ser anterior ao inico!");
+                System.out.println("A Data/Hora de fim não pode ser anterior ao inicio!");
             }
         } while(fim.isBefore(inicio));
-        String origem = lerStringComValidacao("Origem: ",3);
-        String destino = lerStringComValidacao("Destino: ",3);
+
+        // 5. Detalhes
+        String origem = lerStringComValidacao("Morada Origem: ", 3);
+        String destino = lerStringComValidacao("Morada Destino: ", 3);
         double kms = lerDoublePositivo("Distância (kms): ");
-        double custo = lerDoublePositivo("Custo (€): ");
+        double custo = gestao.calcularCustoViagem(kms); // Custo automático
+
+        System.out.println("Custo calculado: " + String.format("%.2f", custo) + " EUR");
 
         Viagem novaViagem = new Viagem(idCondutor, idCliente, idViatura, inicio, fim, origem, destino, kms, custo);
 
         if (gestao.adicionarViagem(novaViagem)){
             System.out.println("\nViagem registada com sucesso!");
         } else {
-            System.out.println("\nErro: Sobreposição de horario detetada!");
+            System.out.println("\nErro: Sobreposição de horário (viatura ou condutor ocupados)!");
         }
         pausar();
     }
@@ -1922,12 +1910,13 @@ public class Menu {
         }
         pausar();
     }
+
     /**
-     * Alterar dados de uma viagem.
+     * Altera os dados de uma viagem existente.
      */
     private void alterarViagem() {
         limparEcra();
-        System.out.println("=== CONSULTAR VIAGEM ===\n");
+        System.out.println("=== ALTERAR VIAGEM ===\n");
 
         int id = lerInteiroPositivo("ID da viagem: ");
         Viagem v = gestao.procurarViagemPorId(id);
@@ -1938,95 +1927,92 @@ public class Menu {
             return;
         }
 
-        System.out.println("\nDados atuais:");
-        System.out.println(v.toStringDetalhado());
-        System.out.println("\n(Deixe em branco para manter o valor atual)\n");
+        System.out.println("\nDados atuais: " + v.toStringDetalhado());
+        System.out.println("(Deixe em branco para manter o valor atual)\n");
 
-        //Alterar Data/hora inicio
-        System.out.println("Nova Data inicio [" + v.getDataHoraInicio().format(data) + "]: ");
-        String inicio = scanner.nextLine().trim();
-
+        // --- 1. DATA INICIO (COM VALIDAÇÃO) ---
         LocalDateTime novoInicio = v.getDataHoraInicio();
-        if (!inicio.isEmpty()) {
-            try {
-                novoInicio = LocalDateTime.parse(inicio, data);
-            } catch (Exception e) {
-                System.out.println("\nFormato inválido! A data de inicio antiga foi mantida.");
+        boolean inicioValido = false;
+        do {
+            String input = lerStringOpcional("Nova Data Inicio [" + v.getDataHoraInicio().format(data) + "]: ");
+            if (input.isEmpty()) {
+                inicioValido = true;
+            } else {
+                try {
+                    LocalDateTime temp = LocalDateTime.parse(input, data);
+                    // Validação de data futura
+                    if (temp.isBefore(LocalDateTime.now())) {
+                        System.out.println("Erro: A nova data não pode ser anterior ao momento atual.");
+                    } else {
+                        novoInicio = temp;
+                        inicioValido = true;
+                    }
+                } catch (Exception e) {
+                    System.out.println("Formato inválido! Use dd-MM-yyyy HH:mm");
+                }
             }
-        }
-        //Alterar Data/hora fim
-        System.out.println("Nova Data Fim [" + v.getDataHoraFim().format(data) + "]: ");
-        String fim = scanner.nextLine().trim();
+        } while (!inicioValido);
 
+        // --- 2. DATA FIM ---
         LocalDateTime novoFim = v.getDataHoraFim();
-        if (!fim.isEmpty()) {
-            try {
-                LocalDateTime tempFim = LocalDateTime.parse(fim, data);
-                if (tempFim.isAfter(novoInicio)) {
-                    novoFim = tempFim;
+        boolean fimValido = false;
+        do {
+            String input = lerStringOpcional("Nova Data Fim [" + v.getDataHoraFim().format(data) + "]: ");
+            if (input.isEmpty()) {
+                if (v.getDataHoraFim().isAfter(novoInicio)) {
+                    novoFim = v.getDataHoraFim();
+                    fimValido = true;
                 } else {
-                    System.out.println("\nErro: A data de fim tem que ser posterior ao inicio! Valor antigo mantigo.");
+                    System.out.println("Erro: Data de fim antiga inválida para o novo inicio.");
                 }
-            } catch (Exception e) {
-                System.out.println("\nFormato invalido! A data de fim antiga foi mantida");
+            } else {
+                try {
+                    LocalDateTime tempFim = LocalDateTime.parse(input, data);
+                    if (tempFim.isAfter(novoInicio)) {
+                        novoFim = tempFim;
+                        fimValido = true;
+                    } else {
+                        System.out.println("A data de fim deve ser posterior à data de inicio.");
+                    }
+                } catch (Exception e) {
+                    System.out.println("Formato inválido!");
+                }
             }
-        } else {
-            //Caso o utilizador mude o inicio mas não o fim
-            if (novoFim.isBefore(novoInicio)) {
-                System.out.println("\nAviso: A nova data de inicio era posterior ao fim antigo");
-                novoFim = novoInicio.plusMinutes(30);//ajuste automático de segurança;
-                System.out.println(" -> Data de fim ajustada automaticamente para: " + novoFim.format(data));
+        } while (!fimValido);
+
+        // Verifica Sobreposição e aplica datas
+        if (!novoInicio.isEqual(v.getDataHoraInicio()) || !novoFim.isEqual(v.getDataHoraFim())) {
+            if (gestao.existeSobreposicaoViagem(v.getIdViatura(), v.getIdCondutor(), novoInicio, novoFim, v.getId())) {
+                System.out.println("\nERRO: Conflito de horário! Datas não alteradas.");
+                novoInicio = v.getDataHoraInicio();
+                novoFim = v.getDataHoraFim();
+            } else {
+                v.setDataHoraInicio(novoInicio);
+                v.setDataHoraFim(novoFim);
             }
         }
-        //aplicar datas
-        v.setDataHoraInicio(novoInicio);
-        v.setDataHoraFim(novoFim);
 
-        //alterar origem e destino
-        System.out.println("Nova Origem [" + v.getMoradaOrigem() + "]: ");
-        String origem = scanner.nextLine().trim();
-        if (!origem.isEmpty()) {
-            v.setMoradaOrigem(origem);
-        }
+        // Resto das edições (Origem, Destino, Kms + Custo Auto)
+        String origem = lerStringOpcional("Nova Origem [" + v.getMoradaOrigem() + "]: ");
+        if (!origem.isEmpty() && Validador.validarComprimentoMinimo(origem, 3)) v.setMoradaOrigem(origem);
 
-        System.out.println("Nova Destino [" + v.getMoradaDestino() + "]: ");
-        String destino = scanner.nextLine().trim();
-        if (!destino.isEmpty()) {
-            v.setMoradaDestino(destino);
-        }
+        String destino = lerStringOpcional("Novo Destino [" + v.getMoradaDestino() + "]: ");
+        if (!destino.isEmpty() && Validador.validarComprimentoMinimo(destino, 3)) v.setMoradaDestino(destino);
 
-        //Alterar kms
-        System.out.println("Novos kms [" + v.getKms() + "]: ");
-        String kms = scanner.nextLine().trim();
-        if (!kms.isEmpty()) {
+        String inputKms = lerStringOpcional("Novos Kms [" + v.getKms() + "]: ");
+        if (!inputKms.isEmpty()) {
             try {
-                double k = Double.parseDouble(kms);
-                if (k > 0) {
-                    v.setKms(k);
-                } else {
-                    System.out.println("\nKms devem ser positivos. Valor mantido.");
+                double kms = Double.parseDouble(inputKms);
+                if (Validador.validarKms(kms)) {
+                    v.setKms(kms);
+                    double novoCusto = gestao.calcularCustoViagem(kms);
+                    v.setCusto(novoCusto);
+                    System.out.println(" -> Custo recalculado: " + String.format("%.2f", novoCusto) + " EUR");
                 }
-            } catch (NumberFormatException e) {
-                System.out.println("\nNúmero inválido. valor mantido.");
-            }
+            } catch (Exception e) { System.out.println("Valor inválido."); }
         }
 
-        //Alterar o custo
-        System.out.println("Novo Custo [" + v.getCusto() + "]: ");
-        String custo = scanner.nextLine().trim();
-        if (!custo.isEmpty()) {
-            try {
-                double c = Double.parseDouble(custo);
-                if (c > 0) {
-                    v.setCusto(c);
-                } else {
-                    System.out.println("\nCusto deve ser positivo. Valor mantido.");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("\nNúmero inválio. Valor mantido.");
-            }
-        }
-        System.out.println("\nViagem atualizada com sucesso!");
+        System.out.println("\nViagem atualizada!");
         pausar();
     }
 
