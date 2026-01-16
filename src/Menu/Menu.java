@@ -166,7 +166,7 @@ public class Menu {
             if (gestao != null) {
                 int convertidas = gestao.processarReservasExpiradas();
                 if (convertidas > 0) {
-                    System.out.println("\n[AVISO AUTOMATICO] " + convertidas + " reserva(s) passada(s) convertida(s) em viagem.");
+                    System.out.println("\n[AVISO AUTOMATICO] " + convertidas + " reserva(s) convertida(s) a viagem.");
                     pausar();
                 }
             }
@@ -1284,9 +1284,11 @@ public class Menu {
         }
 
         // 1. Cliente e Viatura
+        for (Cliente c : gestao.getClientes()) System.out.println(c.toString());
         int idCliente = lerInteiroPositivo("ID do Cliente: ");
         if (gestao.procurarClientePorId(idCliente) == null) { System.out.println("Cliente não encontrado."); pausar(); return; }
 
+        for (Viatura v : gestao.getViaturas()) System.out.println(v.toString());
         int idViatura = lerInteiroPositivo("ID da Viatura: ");
         if (gestao.procurarViaturaPorId(idViatura) == null) { System.out.println("Viatura não encontrada."); pausar(); return; }
 

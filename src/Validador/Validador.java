@@ -7,6 +7,9 @@ public class Validador {
             return false;
         }
 
+        if (telefone.length() < 4) {
+            return false;
+        }
         // Verificar se são todos digitos
         for (int i = 0; i < telefone.length(); i++){
             if (!Character.isDigit(telefone.charAt(i))){
@@ -198,7 +201,7 @@ public class Validador {
     }
 
     public static String getMensagemErroTelefone() {
-        return "Telefone invalido! Deve ter 9 digitos.";
+        return "Telefone invalido! Deve ter 4 digitos no mínimo.";
     }
 
     public static String getMensagemErroNif() {
