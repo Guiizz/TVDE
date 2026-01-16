@@ -10,24 +10,40 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Classe responsável pela Interface com o Utilizador (Consola).
+ * Gere os menus, a leitura de dados, a navegação entre ecrãs e a interação com a lógica de negócio (GestaoTVDE).
+ */
 public class Menu {
     private GestaoTVDE gestao;
     private Scanner scanner;
     private DateTimeFormatter data;
     private GestorFicheiros gestorFicheiros;
 
+    /**
+     * Construtor da classe Menu.
+     * Inicializa os componentes essenciais: Scanner para leitura, Formatador de datas e o Gestor de Ficheiros.
+     * A instância de 'gestao' inicia a null até ser carregada ou criada uma empresa.
+     */
     public Menu() {
-
         this.scanner = new Scanner(System.in);
         this.data = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         this.gestorFicheiros = new GestorFicheiros();
         this.gestao = null;
     }
 
+    /**
+     * Metodo de entrada do menu.
+     * Inicia o fluxo de navegação chamando o menu inicial.
+     */
     public void iniciar(){
         menuInicial();
     }
 
+    /**
+     * Exibe o menu inicial da aplicação.
+     * Permite ao utilizador selecionar uma empresa existente, criar uma nova ou remover uma empresa.
+     */
     private void menuInicial() {
         int opcao;
         do {
@@ -64,6 +80,11 @@ public class Menu {
             }
         } while (opcao != 0);
     }
+
+    /**
+     * Lista as empresas disponíveis nos ficheiros e carrega a escolhida para a memória.
+     * Se não existirem empresas, avisa o utilizador.
+     */
     private void selecionarEmpresa() {
         limparEcra();
         System.out.println("=== SELECIONAR EMPRESA ===\n");
@@ -98,6 +119,11 @@ public class Menu {
             }
         }
     }
+
+    /**
+     * Cria uma nova estrutura de empresa.
+     * Pede o nome, inicializa a GestaoTVDE e cria as pastas/ficheiros necessários.
+     */
     private void criarNovaEmpresa() {
         limparEcra();
         System.out.println("=== CRIAR NOVA EMPRESA ===\n");
@@ -118,6 +144,10 @@ public class Menu {
         }
     }
 
+    /**
+     * Remove uma empresa existente e apaga os seus ficheiros de dados.
+     * Solicita confirmação explícita ao utilizador antes de apagar.
+     */
     private void removerEmpresa() {
         limparEcra();
         System.out.println("=== REMOVER EMPRESA ===\n");
@@ -159,6 +189,12 @@ public class Menu {
         }
         pausar();
     }
+
+    /**
+     * Menu Principal da aplicação.
+     * Verifica automaticamente se existem reservas expiradas ao iniciar.
+     * Encaminha para os sub-menus de gestão (Condutores, Viaturas, Clientes, Reservas, Viagens, etc.).
+     */
     private void menuPrincipal() {
         int opcao;
         do {
@@ -221,7 +257,9 @@ public class Menu {
         } while (opcao != 0);
     }
 
-// Menu Condutores
+    /**
+     * Apresenta o menu de gestão de Condutores.
+     */
     private void menuCondutores() {
         int opcao;
         do {
@@ -263,6 +301,12 @@ public class Menu {
             }
         } while (opcao != 0);
     }
+
+    /**
+     * Adiciona um novo condutor ao sistema.
+     * Solicita todos os dados necessários (Nome, CC, Carta, NSS, NIF, Telemóvel, Morada).
+     * Efetua validações de formato e verifica se os dados únicos (CC, NIF, Carta, NSS) já existem.
+     */
     private void adicionarCondutor() {
         limparEcra();
         System.out.println("=== ADICIONAR CONDUTOR ===\n");
@@ -360,7 +404,7 @@ public class Menu {
     }
 
     /**
-     * Lista todos os condutores.
+     * Lista todos os condutores registados.
      */
     private void listarCondutores() {
         limparEcra();
@@ -381,7 +425,7 @@ public class Menu {
     }
 
     /**
-     * Consulta um condutor pelo ID.
+     * Consulta os detalhes de um condutor específico pelo ID.
      */
     private void consultarCondutor() {
         limparEcra();
@@ -399,7 +443,9 @@ public class Menu {
     }
 
     /**
-     * Altera os dados de um condutor.
+     * Altera os dados de um condutor existente.
+     * Permite alterar campos individuais, mantendo os valores atuais se deixado em branco.
+     * Realiza validações de duplicados para campos únicos (NIF, CC, etc.).
      */
     private void alterarCondutor() {
         limparEcra();
@@ -548,7 +594,9 @@ public class Menu {
     }
 
     /**
-     * Remove um condutor com confirmação.
+     * Remove um condutor do sistema.
+     * Permite pesquisar por ID ou NIF e solicita confirmação.
+     * Impede remoção se o condutor tiver viagens associadas.
      */
     private void removerCondutor() {
         limparEcra();
@@ -603,7 +651,9 @@ public class Menu {
         pausar();
     }
 
-// Menu Viaturas
+    /**
+     * Apresenta o menu de gestão de Viaturas.
+     */
     private void menuViaturas() {
         int opcao;
         do {
@@ -646,6 +696,10 @@ public class Menu {
         } while (opcao != 0);
     }
 
+    /**
+     * Adiciona uma nova viatura ao sistema.
+     * Valida matrícula, marca, modelo, ano de fabrico, cor e lugares.
+     */
     private void adicionarViatura() {
         limparEcra();
         System.out.println("=== ADICIONAR VIATURA ===\n");
@@ -669,10 +723,10 @@ public class Menu {
 
         int anoFabrico;
         do {
-         anoFabrico = lerInteiro("Ano de Fabrico :");
-         if (!Validador.validarAnoFabrico(anoFabrico)){
-             System.out.println(Validador.getMensagemErroAno());
-         }
+            anoFabrico = lerInteiro("Ano de Fabrico :");
+            if (!Validador.validarAnoFabrico(anoFabrico)){
+                System.out.println(Validador.getMensagemErroAno());
+            }
         }while (!Validador.validarAnoFabrico(anoFabrico));
 
         String cor = lerStringComValidacao("Cor :",4);
@@ -695,6 +749,9 @@ public class Menu {
         pausar();
     }
 
+    /**
+     * Lista todas as viaturas registadas.
+     */
     private void listarViaturas (){
         limparEcra();
         System.out.println("=== LISTA DE VIATURAS ===\n");
@@ -713,6 +770,10 @@ public class Menu {
         pausar();
     }
 
+    /**
+     * Consulta os detalhes de uma viatura.
+     * Permite pesquisar por ID ou Matrícula.
+     */
     private void consultarViatura() {
         limparEcra();
         System.out.println("=== CONSULTAR VIATURA ===\n");
@@ -753,6 +814,10 @@ public class Menu {
         pausar();
     }
 
+    /**
+     * Altera os dados de uma viatura existente.
+     * Verifica se a nova matrícula já existe noutra viatura.
+     */
     private void alterarViatura() {
         limparEcra();
         System.out.println("=== ALTERAR VIATURA ===\n");
@@ -864,7 +929,8 @@ public class Menu {
     }
 
     /**
-     * remove viatura com confirmcao
+     * Remove uma viatura do sistema com confirmação.
+     * Impede remoção se a viatura estiver associada a viagens ou reservas.
      */
     private void removerViatura() {
         limparEcra();
@@ -921,6 +987,9 @@ public class Menu {
     }
 
 
+    /**
+     * Apresenta o menu de gestão de Clientes.
+     */
     private void menuClientes() {
         int opcao;
         do {
@@ -963,6 +1032,10 @@ public class Menu {
         } while (opcao != 0);
     }
 
+    /**
+     * Adiciona um novo cliente ao sistema.
+     * Valida NIF e Email.
+     */
     private void adicionarCliente() {
         limparEcra();
         System.out.println("=== ADICIONAR CLIENTE ===\n");
@@ -1026,7 +1099,7 @@ public class Menu {
     }
 
     /**
-     * Lista todos os clientes.
+     * Lista todos os clientes registados.
      */
     private void listarCliente() {
         limparEcra();
@@ -1047,7 +1120,7 @@ public class Menu {
     }
 
     /**
-     * Consulta um cliente pelo ID.
+     * Consulta os detalhes de um cliente pelo ID.
      */
     private void consultarCliente() {
         limparEcra();
@@ -1065,7 +1138,8 @@ public class Menu {
     }
 
     /**
-     * Altera os dados de um cliente.
+     * Altera os dados de um cliente existente.
+     * Verifica duplicidade de NIF e Email ao alterar.
      */
     private void alterarCliente() {
         limparEcra();
@@ -1168,6 +1242,7 @@ public class Menu {
 
     /**
      * Remove um cliente com confirmação.
+     * Impede remoção se o cliente tiver histórico de viagens ou reservas.
      */
     private void removerCliente() {
         limparEcra();
@@ -1222,6 +1297,9 @@ public class Menu {
         pausar();
     }
 
+    /**
+     * Apresenta o menu de gestão de Reservas.
+     */
     private void menuReservas() {
         int opcao;
         do {
@@ -1272,6 +1350,11 @@ public class Menu {
         } while (opcao != 0);
     }
 
+    /**
+     * Cria uma nova reserva de transporte.
+     * Verifica disponibilidade da viatura para o intervalo de tempo selecionado.
+     * Valida datas (devem ser futuras e fim posterior ao início).
+     */
     private void criarReserva() {
         limparEcra();
         System.out.println("=== CRIAR RESERVA ===\n");
@@ -1323,6 +1406,9 @@ public class Menu {
         pausar();
     }
 
+    /**
+     * Lista todas as reservas existentes.
+     */
     private void listarReservas (){
         limparEcra();
         System.out.println("=== LISTA DE RESERVAS ===\n");
@@ -1341,6 +1427,10 @@ public class Menu {
         pausar();
     }
 
+    /**
+     * Consulta os detalhes de uma reserva específica pelo ID.
+     * Apresenta também o nome do cliente e dados da viatura associada.
+     */
     private void consultarReserva() {
         limparEcra();
         System.out.println("=== CONSULTAR RESERVA ===\n");
@@ -1370,6 +1460,10 @@ public class Menu {
         pausar();
     }
 
+    /**
+     * Permite alterar os dados de uma reserva existente.
+     * Lista primeiro as reservas de um determinado cliente para facilitar a seleção.
+     */
     private void alterarReserva() {
         limparEcra();
         System.out.println("=== RESERVAS DE UM CLIENTE ===\n");
@@ -1410,6 +1504,12 @@ public class Menu {
         }
     }
 
+    /**
+     * Metodo auxiliar para alterar uma reserva específica.
+     * Permite alterar moradas e estimativa de Kms.
+     *
+     * @param reserva Objeto Reserva a ser editado
+     */
     private void alterarReservaEspecifica(Reserva reserva) {
         limparEcra();
         System.out.println("=== ALTERAR RESERVA ===\n");
@@ -1452,6 +1552,10 @@ public class Menu {
         pausar();
     }
 
+    /**
+     * Cancela uma reserva, tornando-a inativa.
+     * Requer confirmação do utilizador.
+     */
     private void cancelarReserva() {
         limparEcra();
         System.out.println("=== CANCELAR RESERVA ===\n");
@@ -1479,6 +1583,10 @@ public class Menu {
         pausar();
     }
 
+    /**
+     * Remove permanentemente uma reserva dos registos.
+     * Requer confirmação.
+     */
     private void removerReserva() {
         limparEcra();
         System.out.println("=== REMOVER RESERVA ===\n");
@@ -1511,6 +1619,11 @@ public class Menu {
         pausar();
     }
 
+    /**
+     * Converte uma reserva ativa numa viagem efetiva.
+     * Permite ao utilizador atribuir condutor, viatura (se não definida) e introduzir os dados finais (kms).
+     * Calcula o custo final da viagem.
+     */
     private void converterReservaEmViagem() {
         limparEcra();
         System.out.println("=== CONVERTER RESERVA EM VIAGEM ===\n");
@@ -1626,6 +1739,9 @@ public class Menu {
         pausar();
     }
 
+    /**
+     * Apresenta o menu de gestão de Viagens.
+     */
     private void menuViagens() {
         int opcao;
         do {
@@ -1669,7 +1785,9 @@ public class Menu {
     }
 
     /**
-     * Adiciona uma nova viagem
+     * Adiciona uma nova viagem diretamente (sem reserva prévia).
+     * Solicita todos os intervenientes (Condutor, Cliente, Viatura) e valida horários.
+     * Calcula o custo automaticamente.
      */
     private void adicionarViagem() {
         limparEcra();
@@ -1735,7 +1853,8 @@ public class Menu {
     }
 
     /**
-     * Menu de listagem de viagens.
+     * Menu de listagem de viagens com opções de filtro.
+     * Permite listar todas ou filtrar por Cliente, Condutor ou Viatura.
      */
     private void listarViagens() {
         limparEcra();
@@ -1770,7 +1889,7 @@ public class Menu {
     }
 
     /**
-     * Lista todas as viagens sem filtro.
+     * Lista todas as viagens registadas sem filtros.
      */
     private void listarTodasViagens() {
         limparEcra();
@@ -1780,7 +1899,8 @@ public class Menu {
     }
 
     /**
-     * Pede o ID do cliente e permite listar todas ou filtrar por datas.
+     * Lista viagens de um cliente específico.
+     * Permite sub-filtro por intervalo de datas.
      */
     private void listarViagensCliente() {
         limparEcra();
@@ -1831,7 +1951,7 @@ public class Menu {
     }
 
     /**
-     * Pede o ID do condutor e lista as suas viagens.
+     * Lista viagens efetuadas por um condutor específico.
      */
     private void listarViagensCondutor() {
         limparEcra();
@@ -1850,7 +1970,8 @@ public class Menu {
     }
 
     /**
-     * Permite pesquisar viatura por ID ou Matrícula e lista as suas viagens.
+     * Lista viagens efetuadas numa viatura específica.
+     * Permite pesquisar a viatura por ID ou Matrícula.
      */
     private void listarViagensViatura() {
         limparEcra();
@@ -1899,7 +2020,7 @@ public class Menu {
 
 
     /**
-     * Consulta uma viagem pelo ID.
+     * Consulta os detalhes de uma viagem específica.
      */
     private void consultarViagem() {
         limparEcra();
@@ -1918,6 +2039,8 @@ public class Menu {
 
     /**
      * Altera os dados de uma viagem existente.
+     * Valida datas e calcula outra vez o custo se a distância for alterada.
+     * Verifica sobreposição de horários ao alterar as datas.
      */
     private void alterarViagem() {
         limparEcra();
@@ -2022,7 +2145,7 @@ public class Menu {
     }
 
     /**
-     * Remove uma viagem com confirmação.
+     * Remove uma viagem do sistema com confirmação.
      */
     private void removerViagem() {
         limparEcra();
@@ -2051,7 +2174,9 @@ public class Menu {
     }
 
 
-
+    /**
+     * Apresenta o menu de Relatórios e Estatísticas.
+     */
     private void menuRelStats() {
         int opcao;
         do {
@@ -2095,7 +2220,9 @@ public class Menu {
         } while (opcao != 0);
     }
 
-    // --- RELATÓRIO 1 ---
+    /**
+     * Gera relatório: Clientes que utilizaram uma determinada viatura.
+     */
     private void relatorioClientesPorViatura() {
         limparEcra();
         System.out.println("=== CLIENTES POR VIATURA ===\n");
@@ -2126,7 +2253,9 @@ public class Menu {
         pausar();
     }
 
-    // --- RELATÓRIO 2 ---
+    /**
+     * Gera relatório: Total faturado por um condutor num intervalo de tempo.
+     */
     private void relatorioFaturacaoCondutor() {
         limparEcra();
         System.out.println("=== FATURACAO DE CONDUTOR ===\n");
@@ -2162,7 +2291,9 @@ public class Menu {
         pausar();
     }
 
-    // --- RELATÓRIO 3 ---
+    /**
+     * Gera relatório: Distância média de todas as viagens num intervalo de tempo.
+     */
     private void relatorioDistanciaMedia() {
         limparEcra();
         System.out.println("=== DISTÂNCIA MÉDIA POR VIAGEM ===\n");
@@ -2189,7 +2320,9 @@ public class Menu {
         pausar();
     }
 
-    // --- RELATÓRIO 4 ---
+    /**
+     * Gera relatório: Destino mais frequente num intervalo de tempo.
+     */
     private void relatorioDestinoMaisSolicitado() {
         limparEcra();
         System.out.println("=== DESTINO MAIS SOLICITADO ===\n");
@@ -2217,7 +2350,9 @@ public class Menu {
         pausar();
     }
 
-    // --- RELATÓRIO 5 ---
+    /**
+     * Gera relatório: Lista de clientes com filtros dinâmicos (por datas ou por distância de viagens).
+     */
     private void relatorioClientesEmIntervalo() {
         limparEcra();
         System.out.println("=== LISTA DE CLIENTES COM VIAGENS ===\n");
@@ -2289,7 +2424,10 @@ public class Menu {
     }
 
 
-
+    /**
+     * Apresenta o menu de gestão de Ficheiros.
+     * Permite guardar ou carregar manualmente o estado da aplicação.
+     */
     private void menuFicheiros() {
         int opcao;
         do {
@@ -2343,6 +2481,10 @@ public class Menu {
         } while (opcao != 0);
     }
 
+    /**
+     * Menu de saída.
+     * Pergunta ao utilizador se deseja guardar as alterações antes de terminar a execução.
+     */
     private void menuSair () {
         String resposta = lerString("Deseja guardar as alterações antes de sair? (S/N): ");
 
@@ -2363,8 +2505,9 @@ public class Menu {
     // ==================== METODOS AUXILIARES ====================
 
     /**
-     * Le um numero inteiro do utilizador.
-     * @param mensagem Mensagem a apresentar
+     * Le um numero inteiro do utilizador, garantindo que é um valor numérico válido.
+     *
+     * @param mensagem Mensagem a apresentar antes de pedir o valor
      * @return Numero inteiro lido
      */
     private int lerInteiro(String mensagem) {
@@ -2379,7 +2522,8 @@ public class Menu {
     }
 
     /**
-     * Le um numero inteiro positivo do utilizador.
+     * Le um numero inteiro positivo do utilizador (> 0).
+     *
      * @param mensagem Mensagem a apresentar
      * @return Numero inteiro positivo lido
      */
@@ -2396,6 +2540,7 @@ public class Menu {
 
     /**
      * Le um numero decimal do utilizador.
+     *
      * @param mensagem Mensagem a apresentar
      * @return Numero decimal lido
      */
@@ -2412,6 +2557,7 @@ public class Menu {
 
     /**
      * Le um numero decimal positivo do utilizador.
+     *
      * @param mensagem Mensagem a apresentar
      * @return Numero decimal positivo lido
      */
@@ -2427,9 +2573,10 @@ public class Menu {
     }
 
     /**
-     * Le uma string do utilizador (obrigatoria).
+     * Le uma string do utilizador (obrigatorio ser - não vazia).
+     *
      * @param mensagem Mensagem a apresentar
-     * @return String lida
+     * @return String lida e limpa de espaços extra
      */
     private String lerString(String mensagem) {
         String valor;
@@ -2442,6 +2589,14 @@ public class Menu {
         } while (valor.isEmpty());
         return valor;
     }
+
+    /**
+     * Le uma string do utilizador garantindo um comprimento mínimo.
+     *
+     * @param mensagem Mensagem a apresentar
+     * @param minimo Numero mínimo de caracteres exigido
+     * @return String válida lida
+     */
     private String lerStringComValidacao(String mensagem, int minimo) {
         String valor;
         do {
@@ -2455,7 +2610,8 @@ public class Menu {
 
 
     /**
-     * Le uma string do utilizador (opcional).
+     * Le uma string do utilizador (opcional). Aceita inputs vazios.
+     *
      * @param mensagem Mensagem a apresentar
      * @return String lida (pode ser vazia)
      */
@@ -2465,7 +2621,7 @@ public class Menu {
     }
 
     /**
-     * Pausa a execucao ate o utilizador pressionar Enter.
+     * Pausa a execucao do programa ate o utilizador pressionar Enter.
      */
     private void pausar() {
         System.out.print("\nPressione Enter para continuar...");
@@ -2473,7 +2629,7 @@ public class Menu {
     }
 
     /**
-     * Limpa o ecra (simula limpeza com linhas em branco).
+     * Limpa o ecra da consola.
      */
     private void limparEcra() {
         for (int i = 0; i < 50; i++) {
@@ -2481,6 +2637,13 @@ public class Menu {
         }
     }
 
+    /**
+     * Lê uma data e hora no formato dd-MM-yyyy HH:mm.
+     * Garante que o utilizador introduz um formato válido.
+     *
+     * @param mensagem Texto a apresentar (Ex: "Data de Inicio")
+     * @return Objeto LocalDateTime válido
+     */
     private LocalDateTime lerDataHora(String mensagem){
         while (true) {
             try {
@@ -2494,7 +2657,9 @@ public class Menu {
 
     /**
      * Imprime uma linha de menu com o texto centrado entre as bordas '║'.
-     * A largura interna fixa é de 62 caracteres (baseado no seu menu atual).
+     * A largura interna fixa é de 62 caracteres.
+     *
+     * @param texto Texto a centrar
      */
     private void imprimirLinhaCentrada(String texto) {
         int larguraTotal = 62; // Largura interna entre as barras ║
@@ -2521,7 +2686,9 @@ public class Menu {
     }
 
     /**
-     * Metodo auxiliar para imprimir qualquer lista de viagens de forma formatada.
+     * Metodo auxiliar para imprimir uma lista de viagens.
+     *
+     * @param lista Lista de viagens a imprimir
      */
     private void imprimirListaViagens(ArrayList<Viagem> lista) {
         if (lista == null || lista.isEmpty()) {

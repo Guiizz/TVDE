@@ -1,7 +1,18 @@
 package Validador;
 
+/**
+ * Classe utilitária responsável pela validação de dados inseridos pelo utilizador.
+ * Contém métodos estáticos para verificar formatos de NIF, matrículas, emails, etc.
+ */
 public class Validador {
-    // Validar um numero de telefone
+
+    /**
+     * Valida um número de telefone.
+     * Verifica se não é nulo, se tem pelo menos 4 dígitos e se contém apenas algarismos.
+     *
+     * @param telefone String com o número a validar
+     * @return true se for válido, false caso contrário
+     */
     public static boolean validarTelefone (String telefone) {
         if (telefone == null || telefone.isEmpty()) {
             return false;
@@ -19,17 +30,23 @@ public class Validador {
         return true;
     }
 
-    //Validar niff (9 digitos)
+    /**
+     * Valida um NIF (Número de Identificação Fiscal).
+     * Deve ter exatamente 9 dígitos numéricos.
+     *
+     * @param nif String com o NIF
+     * @return true se tiver 9 dígitos, false caso contrário
+     */
     public static boolean validarNif (String nif) {
         if (nif == null || nif.isEmpty()) {
             return false;
         }
-       // verificar se tem 9 digitos
-       if (nif.length() != 9) {
-           return false;
-       }
+        // verificar se tem 9 digitos
+        if (nif.length() != 9) {
+            return false;
+        }
 
-       //verificar se são digitos
+        //verificar se são digitos
         for (int i = 0; i < nif.length(); i++) {
             if (!Character.isDigit(nif.charAt(i))){
                 return false;
@@ -38,7 +55,13 @@ public class Validador {
         return true;
     }
 
-    //Validar Numero da segurança social.(11 digitos)
+    /**
+     * Valida um Número de Segurança Social (NSS).
+     * Deve ter exatamente 11 dígitos numéricos.
+     *
+     * @param nss String com o NSS
+     * @return true se tiver 11 dígitos, false caso contrário
+     */
     public static boolean validarNss (String nss) {
         if (nss == null || nss.isEmpty()) {
             return false;
@@ -58,8 +81,13 @@ public class Validador {
         return true;
     }
 
-    //Validar numero identificação civil - cc (8 digitos + 1 letra + 2 letras e 1 numero -> Formato: 12345678 X AB1)
-
+    /**
+     * Valida um Número de Identificação Civil (CC).
+     * Verifica se tem pelo menos 8 caracteres e se os primeiros 8 são dígitos.
+     *
+     * @param numId String com o número de identificação
+     * @return true se respeitar o formato mínimo, false caso contrário
+     */
     public static boolean validarNumeroIdentificacao (String numId) {
         if (numId == null || numId.isEmpty()) {
             return false;
@@ -78,22 +106,33 @@ public class Validador {
 
         return true;
     }
-    // Validar matricula
+
+    /**
+     * Valida uma matrícula automóvel.
+     * Aceita formatos com ou sem hífen, desde que tenha 6 caracteres alfanuméricos.
+     *
+     * @param matricula String com a matrícula
+     * @return true se tiver 6 caracteres válidos, false caso contrário
+     */
     public static boolean validarMatricula(String matricula) {
         if (matricula == null || matricula.isEmpty()) {
             return false;
         }
 
         // 1. Limpar: Removemos hifens, espaços e passamos a maiúsculas temporariamente
-        // A expressão "[^A-Z0-9]" significa "tudo o que NÃO for letra (A-Z) ou número (0-9)"
         String matriculaLimpa = matricula.toUpperCase().replaceAll("[^A-Z0-9]", "");
 
         // 2. Verificar: Se tem exatamente 6 caracteres alfanuméricos
         return matriculaLimpa.length() == 6;
     }
 
-    // Validar carta de condução
-
+    /**
+     * Valida uma Carta de Condução.
+     * Verifica o formato: 2 letras seguidas de 6 dígitos.
+     *
+     * @param carta String com o número da carta
+     * @return true se respeitar o padrão LL-DDDDDD (ou LLDDDDDD), false caso contrário
+     */
     public static boolean validarCartaConducao(String carta) {
         if (carta == null) return false;
 
@@ -101,12 +140,16 @@ public class Validador {
         String limpa = carta.toUpperCase().replaceAll("[^A-Z0-9]", "");
 
         // 2. Verificar formato: Deve ter exatamente 2 Letras + 6 Dígitos
-        // A expressão "[A-Z]{2}[0-9]{6}" garante isso.
         return limpa.matches("[A-Z]{2}[0-9]{6}");
     }
 
-    // Validar endereço de e-mail.
-
+    /**
+     * Valida um endereço de e-mail de forma simples.
+     * Verifica apenas se contém o caracter '@' e não está vazio.
+     *
+     * @param email String com o e-mail
+     * @return true se contiver '@', false caso contrário
+     */
     public static boolean validarEmail(String email) {
         if (email == null || email.isEmpty()) {
             return true; // E-mail pode ser opcional
@@ -121,22 +164,43 @@ public class Validador {
         return true;
     }
 
-    // Validar ano de fabrico
+    /**
+     * Valida o ano de fabrico de uma viatura.
+     *
+     * @param ano Ano a validar
+     * @return true se estiver entre 1900 e 2026
+     */
     public static boolean validarAnoFabrico (int ano) {
         return ano >= 1900 && ano <= 2026;
     }
 
-    // Valida o numero de lugares.
+    /**
+     * Valida o número de lugares de uma viatura.
+     *
+     * @param lugares Número de lugares
+     * @return true se estiver entre 1 e 9
+     */
     public static boolean validarLugares(int lugares) {
         return lugares >= 1 && lugares <= 9;
     }
 
-    // Validar distancia em km.
+    /**
+     * Valida uma distância em quilómetros.
+     *
+     * @param kms Valor da distância
+     * @return true se for maior que 0 e menor que 10000
+     */
     public static boolean validarKms(double kms){
         return kms > 0 && kms < 10000;
     }
 
-    //Validar se uma string tem o comprimento minimo
+    /**
+     * Verifica se uma string cumpre um comprimento mínimo.
+     *
+     * @param texto String a verificar
+     * @param minimo Número mínimo de caracteres
+     * @return true se o comprimento for igual ou superior ao mínimo
+     */
     public static boolean validarComprimentoMinimo(String texto, int minimo) {
         if (texto == null) {
             return false;
@@ -145,7 +209,13 @@ public class Validador {
         return texto.trim().length() >= minimo;
     }
 
-    // Formata matricula (adiciona hifens e mete em maiusculas)
+    /**
+     * Formata uma matrícula para o padrão XX-XX-XX.
+     * Adiciona os hifens automaticamente caso não existam.
+     *
+     * @param matricula Matrícula original
+     * @return Matrícula formatada em maiúsculas com hifens
+     */
     public static String formatarMatricula(String matricula) {
         if (matricula == null) {
             return "";
@@ -154,8 +224,7 @@ public class Validador {
         // 1. Passar para maiúsculas
         String m = matricula.toUpperCase();
 
-        // 2. Remover tudo o que não interessa (espaços, traços antigos, pontos)
-        // Ficamos apenas com os 6 caracteres (ex: "aa 00 aa" vira "AA00AA")
+        // 2. Remover tudo o que não interessa
         String limpa = m.replaceAll("[^A-Z0-9]", "");
 
         // 3. Se tiver o tamanho certo (6), formatamos XX-XX-XX
@@ -163,18 +232,20 @@ public class Validador {
             return limpa.substring(0, 2) + "-" + limpa.substring(2, 4) + "-" + limpa.substring(4, 6);
         }
 
-        // Se não tiver 6 digitos (caso algo falhe), devolvemos a original em maiúsculas
         return m;
     }
 
-    // Formata matricula (adiciona hifens e mete em maiusculas)
+    /**
+     * Formata uma carta de condução para o padrão XX-XXXXXX.
+     *
+     * @param carta Carta original
+     * @return Carta formatada em maiúsculas com hífen
+     */
     public static String formatarCartaConducao(String carta) {
         if (carta == null) return "";
 
-        // 1. Limpar e Uppercase
         String limpa = carta.toUpperCase().replaceAll("[^A-Z0-9]", "");
 
-        // 2. Se tiver o formato correto (8 chars), adiciona o hífen
         if (limpa.length() == 8) {
             return limpa.substring(0, 2) + "-" + limpa.substring(2);
         }
@@ -182,13 +253,20 @@ public class Validador {
         return carta.toUpperCase();
     }
 
-    // Formatar email para minusculas
+    /**
+     * Formata um email para letras minúsculas e remove espaços.
+     *
+     * @param email Email original
+     * @return Email formatado
+     */
     public static String formatarEmail(String email) {
         if (email == null) {
             return "";
         }
         return email.trim().toLowerCase();
     }
+
+    // Métodos para obter mensagens de erro (Getters simples)
 
     public static String getMensagemErroTelefone() {
         return "Telefone invalido! Deve ter 4 digitos no mínimo.";

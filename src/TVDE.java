@@ -15,7 +15,7 @@ public class TVDE {
         System.out.println("╔══════════════════════════════════════════════════════════════╗");
         System.out.println("║                                                              ║");
         System.out.println("║                                                              ║");
-        System.out.println("║               SISTEMA DE GESTAO DE EMPRESA TVDE              ║");
+        System.out.println("║               SISTEMA DE GESTÃO DE EMPRESA TVDE              ║");
         System.out.println("║                                                              ║");
         System.out.println("║                                                              ║");
         System.out.println("╚══════════════════════════════════════════════════════════════╝");
