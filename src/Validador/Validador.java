@@ -136,16 +136,6 @@ public class Validador {
         return kms > 0 && kms < 10000;
     }
 
-    //Validar custo/valor
-    public static boolean validarValor(double valor) {
-        return valor > 0;
-    }
-
-    //Validar texto obrigatorio
-    public static boolean validarTextoObrigatorio(String texto) {
-        return texto != null && !texto.trim().isEmpty();
-    }
-
     //Validar se uma string tem o comprimento minimo
     public static boolean validarComprimentoMinimo(String texto, int minimo) {
         if (texto == null) {

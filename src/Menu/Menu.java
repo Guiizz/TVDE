@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.SortedMap;
 
 public class Menu {
     private GestaoTVDE gestao;
@@ -2463,25 +2462,6 @@ public class Menu {
     private String lerStringOpcional(String mensagem) {
         System.out.print(mensagem);
         return scanner.nextLine().trim();
-    }
-
-
-    /**
-     * Le um inteiro dentro de um intervalo.
-     * @param mensagem Mensagem a apresentar
-     * @param min Valor minimo
-     * @param max Valor maximo
-     * @return Inteiro lido
-     */
-    private int lerInteiroEntre(String mensagem, int min, int max) {
-        int valor;
-        do {
-            valor = lerInteiro(mensagem);
-            if (valor < min || valor > max) {
-                System.out.println("Valor deve estar entre " + min + " e " + max + ".");
-            }
-        } while (valor < min || valor > max);
-        return valor;
     }
 
     /**

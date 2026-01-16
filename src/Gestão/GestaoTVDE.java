@@ -569,24 +569,6 @@ public class GestaoTVDE {
     }
 
     /**
-     * Obtem as reservas ativas de um cliente
-     * @param idCliente ID do cliente
-     * @param resultado Número de reservas
-     * @return Arraylist de reservas ativas do cliente
-     */
-    public int getReservasAtivasCliente(int idCliente, ArrayList<Reserva> resultado) {
-        int numResultados = 0;
-        for (int i = 0; i < numReservas; i++) {
-            Reserva r = reservas.get(i);
-            if (r.getIdCliente() == idCliente && r.isAtiva()) {
-                resultado.add(r);
-                numResultados++;
-            }
-        }
-        return numResultados;
-    }
-
-    /**
      * Obtem o número de reservas.
      * @return número de reservas
      */
@@ -980,25 +962,6 @@ public class GestaoTVDE {
 
         return totalKms / contadorViagens;
     }
-
-    /**
-     * Auxiliar: Calcula os KMs totais de uma viatura num intervalo.
-     */
-    public double getKmsViaturaEntreDatas(int idViatura, LocalDateTime inicio, LocalDateTime fim) {
-        double totalKms = 0.0;
-        for (Viagem v : viagens) {
-            if (v.getIdViatura() == idViatura) {
-                // Verificar datas
-                LocalDateTime data = v.getDataHoraInicio();
-                if ((data.isEqual(inicio) || data.isAfter(inicio)) &&
-                        (data.isEqual(fim) || data.isBefore(fim))) {
-                    totalKms += v.getKms();
-                }
-            }
-        }
-        return totalKms;
-    }
-
 
     /**
      * 4. Encontra o destino mais solicitado (em Reservas e Viagens) num intervalo.
