@@ -584,7 +584,9 @@ public class GestaoTVDE {
         int convertidas = 0;
         LocalDateTime agora = LocalDateTime.now();
 
-        for (Reserva r : reservas) {
+        ArrayList<Reserva> copiaSeguranca = new ArrayList<>(reservas);
+
+        for (Reserva r : copiaSeguranca) {
             // Se a reserva está ativa E a hora de fim já passou
             if (r.isAtiva() && agora.isAfter(r.getDataHoraFim())) {
 
@@ -595,9 +597,6 @@ public class GestaoTVDE {
                     // 2. Se encontrou condutor, converte em viagem
                     converterReservaEmViagem(r.getId(), idCondutor);
                     convertidas++;
-                } else {
-                    // (Opcional) Podes fazer um print aqui se quiseres saber que falhou
-                    // System.out.println("Reserva " + r.getId() + " expirada mas sem condutores disponíveis.");
                 }
             }
         }
@@ -611,7 +610,7 @@ public class GestaoTVDE {
         // Calcula custo (ex: 0.70€ por Km)
         double custo = r.getKms() * 0.70;
 
-        // Cria a Viagem
+        // Cria a Viagem com os dados da reserva
         Viagem novaViagem = new Viagem(
                 idCondutor, r.getIdCliente(), r.getIdViatura(),
                 r.getDataHoraInicio(), r.getDataHoraFim(),
@@ -622,8 +621,8 @@ public class GestaoTVDE {
         viagens.add(novaViagem);
         numViagens++;
 
-        // Desativa a reserva para não ser processada novamente
-        r.setAtiva(false);
+        reservas.remove(r);
+        numReservas--;
     }
     // ==================== OPERACOES CRUD VIAGENS ====================
 
@@ -1092,20 +1091,22 @@ public class GestaoTVDE {
     }
 
     /**
-
-     Converte uma reserva numa viagem.
-     @param idReserva ID da reserva
-     @param idCondutor ID do condutor
-     @param dataHoraFim Data/hora de fim
-     @param kmsReais Kms reais percorridos
-     @return Viagem criada ou null se erro*/
+     * Converte uma reserva numa viagem (Manual).
+     * @param idReserva ID da reserva
+     * @param idCondutor ID do condutor
+     * @param dataHoraFim Data/hora de fim
+     * @param kmsReais Kms reais percorridos
+     * @return Viagem criada ou null se erro
+     */
     public Viagem converterReservaEmViagem(int idReserva, int idCondutor, LocalDateTime dataHoraFim, double kmsReais) {
         Reserva reserva = procurarReservaPorId(idReserva);
         if (reserva == null || !reserva.isAtiva()) {
-            return null;}
+            return null;
+        }
         Condutor condutor = procurarCondutorPorId(idCondutor);
         if (condutor == null) {
-            return null;}
+            return null;
+        }
 
         // Calcular custo
         double custo = calcularCustoViagem(kmsReais);
@@ -1123,15 +1124,16 @@ public class GestaoTVDE {
                 custo
         );
 
-        // Desativar reserva
-        reserva.setAtiva(false);
+        reservas.remove(reserva);
+        numReservas--;
 
-        // Adicionar viagem
+        // Adicionar viagem à lista de viagens
         viagens.add(viagem);
         numViagens++;
 
         return viagem;
     }
+
     /**
      * Calcula o custo de uma viagem.
      * @param kms Distancia em km
