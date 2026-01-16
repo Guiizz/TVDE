@@ -1,0 +1,5 @@
+1;Andre;789654321;918765432;Rua da Camelia;andreslb@gmail.com
+2;Gustavo;123435678;921345678;Rua do Heroi;gustavosemaco@outlook.com
+3;Miguel;987654321;913456789;Avenida Central;miguel@email.com
+4;Sofia;456789123;916789123;Rua das Flores;sofia@email.com
+5;Tiago;321654987;919876543;Rua do Sol;tiago@email.com
