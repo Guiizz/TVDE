@@ -223,17 +223,8 @@ public class GestorFicheiros {
     private void escreverReservas(File ficheiro, ArrayList<Reserva> lista) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(ficheiro))) {
             for (Reserva r : lista) {
-                String linha =
-                        r.getId() + SEPARADOR +
-                                r.getIdCliente() + SEPARADOR +
-                                r.getIdViatura() + SEPARADOR +
-                                r.getDataHoraInicio().toString() + SEPARADOR +
-                                r.getMoradaOrigem() + SEPARADOR +
-                                r.getMoradaDestino() + SEPARADOR +
-                                r.getKms() + SEPARADOR +
-                                r.isAtiva();
-
-                writer.write(linha);
+                // Atualizado para usar o paraFicheiro() ou escrever manualmente o novo campo
+                writer.write(r.paraFicheiro());
                 writer.write(System.lineSeparator());
             }
         }
@@ -429,16 +420,20 @@ public class GestorFicheiros {
                 if (linha.isEmpty()) continue;
 
                 String[] c = linha.split(SEPARADOR, -1);
-                if (c.length < 8) throw new IOException("reservas.txt linha " + nlinha + " inválida");
+                // Agora esperamos 9 campos em vez de 8
+                if (c.length < 9) throw new IOException("reservas.txt linha " + nlinha + " inválida");
 
                 int id = Integer.parseInt(c[0]);
                 int idCliente = Integer.parseInt(c[1]);
                 int idViatura = Integer.parseInt(c[2]);
                 LocalDateTime inicio = LocalDateTime.parse(c[3]);
-                double kms = Double.parseDouble(c[6]);
-                boolean ativa = Boolean.parseBoolean(c[7]);
+                LocalDateTime fim = LocalDateTime.parse(c[4]); // <--- NOVO CAMPO LIDO
+                String origem = c[5];
+                String destino = c[6];
+                double kms = Double.parseDouble(c[7]);
+                boolean ativa = Boolean.parseBoolean(c[8]);
 
-                res.add(new Reserva(id, idCliente, idViatura, inicio, c[4], c[5], kms, ativa));
+                res.add(new Reserva(id, idCliente, idViatura, inicio, fim, origem, destino, kms, ativa));
             }
         }
         return res;

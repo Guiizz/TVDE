@@ -1276,15 +1276,14 @@ public class Menu {
             return;
         }
 
-        // 1. Cliente
+        // 1. Cliente e Viatura
         int idCliente = lerInteiroPositivo("ID do Cliente: ");
         if (gestao.procurarClientePorId(idCliente) == null) { System.out.println("Cliente não encontrado."); pausar(); return; }
 
-        // 2. Viatura
         int idViatura = lerInteiroPositivo("ID da Viatura: ");
         if (gestao.procurarViaturaPorId(idViatura) == null) { System.out.println("Viatura não encontrada."); pausar(); return; }
 
-        // 3. Datas (COM VALIDAÇÃO DE FUTURO)
+        // 2. Datas
         LocalDateTime inicio;
         do {
             inicio = lerDataHora("Data Inicio");
@@ -1301,14 +1300,12 @@ public class Menu {
             }
         } while (fim.isBefore(inicio));
 
-        // 4. Origem e Destino (Novos campos)
+        // 3. Detalhes
         String origem = lerStringComValidacao("Morada Origem: ", 3);
         String destino = lerStringComValidacao("Morada Destino: ", 3);
-
-        //5. KMS
         double kms = lerDoublePositivo("KMS: ");
 
-        Reserva r = new Reserva(idCliente, idViatura, inicio, origem, destino, kms);
+        Reserva r = new Reserva(idCliente, idViatura, inicio, fim, origem, destino, kms);
 
         if (gestao.adicionarReserva(r)) {
             System.out.println("\nReserva criada com sucesso!");

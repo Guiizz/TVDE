@@ -510,11 +510,9 @@ public class GestaoTVDE {
      * @return True se adicionada com sucesso, False se houver sobreposições
      */
     public boolean adicionarReserva(Reserva reserva) {
-        if (reserva == null) {
-            return false;
-        }
-        // Verificar sobreposicao
-        if (existeSobreposicao(reserva.getIdViatura(), reserva.getDataHoraInicio(), null, 0)) {
+        if (reserva == null) return false;
+
+        if (existeSobreposicao(reserva.getIdViatura(), reserva.getDataHoraInicio(), reserva.getDataHoraFim(), 0)) {
             return false;
         }
         reservas.add(reserva);
@@ -745,16 +743,15 @@ public class GestaoTVDE {
      * @return true se houver conflito
      */
     public boolean existeSobreposicao(int idViatura, LocalDateTime inicio, LocalDateTime fim, int excluirId) {
-        // Define o fim efetivo: se vier null, adiciona 2 horas (estimativa padrão para reservas)
         LocalDateTime fimEfetivo = (fim == null) ? inicio.plusHours(2) : fim;
 
         // 1. Verificar conflito com RESERVAS ATIVAS
         for (int i = 0; i < numReservas; i++) {
             Reserva r = reservas.get(i);
-            // Verifica se: não é a própria reserva, está ativa, e é a mesma viatura
+
             if (r.getId() != excluirId && r.isAtiva() && r.getIdViatura() == idViatura) {
-                // Reservas guardadas não têm data de fim explícita, assumimos +2h
-                LocalDateTime rFim = r.getDataHoraInicio().plusHours(2);
+                // USAR A DATA DE FIM REAL DA RESERVA
+                LocalDateTime rFim = r.getDataHoraFim();
 
                 if (verificarConflitoTempo(inicio, fimEfetivo, r.getDataHoraInicio(), rFim)) {
                     return true;
@@ -762,10 +759,9 @@ public class GestaoTVDE {
             }
         }
 
-        // 2. Verificar conflito com VIAGENS (histórico ou agendadas)
+        // 2. Verificar conflito com VIAGENS (mantém-se igual)
         for (int i = 0; i < numViagens; i++) {
             Viagem v = viagens.get(i);
-            // Verifica se: não é a própria viagem e é a mesma viatura
             if (v.getId() != excluirId && v.getIdViatura() == idViatura) {
                 if (verificarConflitoTempo(inicio, fimEfetivo, v.getDataHoraInicio(), v.getDataHoraFim())) {
                     return true;
